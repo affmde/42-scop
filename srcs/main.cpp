@@ -1,17 +1,21 @@
 #include <iostream>
 
-#include "Parser.hpp"
+#include "Checker.hpp"
 
 int main(int argc, char **argv)
 {
-	(void)argv;
-	if (argc < 2)
+	if (argc != 3)
 	{
-		std::cout << "Not correct nuber of arguments" << std::endl;
+		std::cout << "Error: Not correct nuber of arguments" << std::endl;
 		return 0;
 	}
-	Parser parser;
-	parser.readFile("main.cpp");
-	std::cout << "Hello World" << std::endl;
+	try {
+		Checker checker(argv[1], argv[2]);
+		checker.check();
+	} catch (std::exception &e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		return 0;
+	}
+	
 	return 0;
 }

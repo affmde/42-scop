@@ -17,7 +17,7 @@ OBJS	:= ${SRCS:.cpp=.o}
 OBJS_DIR = obj/
 CORE_DIR = srcs/
 
-CORE = main.cpp Parser.cpp
+CORE = main.cpp Parser.cpp Checker.cpp
 
 ALL_SOURCES = $(CORE)
 ALL_OBJS = $(ALL_SOURCES:.cpp=.o)
