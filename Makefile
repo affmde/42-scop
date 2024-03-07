@@ -1,5 +1,7 @@
 .SILENT=
 
+CXX = g++
+
 COLOUR_GREEN=\033[0;32m
 COLOUR_RED=\033[0;31m
 COLOUR_BLUE=\033[0;34m
@@ -16,10 +18,12 @@ OBJS	:= ${SRCS:.cpp=.o}
 
 OBJS_DIR = obj/
 CORE_DIR = srcs/
+GEOMETRY_DIR = srcs/geometry/
 
-CORE = main.cpp Parser.cpp Checker.cpp
+CORE = main.cpp Parser.cpp Checker.cpp Model.cpp Utils.cpp
+GEOMETRY = Vertice.cpp VerticeTexture.cpp
 
-ALL_SOURCES = $(CORE)
+ALL_SOURCES = $(CORE) $(GEOMETRY)
 ALL_OBJS = $(ALL_SOURCES:.cpp=.o)
 OBJS = $(patsubst %, $(OBJS_DIR)%, $(ALL_OBJS))
 
@@ -70,4 +74,8 @@ $(OBJS_DIR):
 
 $(OBJS_DIR)%.o: $(CORE_DIR)%.cpp
 	@g++ $(CFLAGS) -c $< -o $@ $(HEADERS)
+	@echo "$(COLOUR_BLUE)$@ created$(COLOUR_END)"
+
+$(OBJS_DIR)%.o: $(GEOMETRY_DIR)%.cpp
+	@$(CXX) $(CFLAGS) -c $< -o $@ $(HEADERS)
 	@echo "$(COLOUR_BLUE)$@ created$(COLOUR_END)"
