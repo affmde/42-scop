@@ -3,14 +3,14 @@
 
 #include "Parser.hpp"
 #include "Utils.hpp"
-#include "Face.hpp"
+#include "Vertex.hpp"
 
 Parser::Parser() {}
 Parser::~Parser() 
 {
-	for(auto &f : this->parsedFaces)
+	for(auto &f : this->parsedVertex)
 		delete f;
-	this->parsedFaces.clear();
+	this->parsedVertex.clear();
 }
 
 void Parser::readFile(std::string pathFile)
@@ -104,19 +104,19 @@ void Parser::parseFaceLine(std::string &line)
 				vn.push_back(std::stoi(elements[j]));
 		}
 	}
-	Face *face = new Face();
+	Vertex *vertex = new Vertex();
 	for(auto &vertice : v)
-		face->addV(Vertice(this->parsedVertices[vertice - 1]));
+		vertex->addV(Vertice(this->parsedVertices[vertice - 1]));
 	for(auto &vnormal : vn)
-		face->addVN(Vertice(this->parsedVerticesNormal[vnormal - 1]));
+		vertex->addVN(Vertice(this->parsedVerticesNormal[vnormal - 1]));
 	for(auto &vtexture : vt)
-		face->addVT(VerticeTexture(this->parsedVerticesTexture[vtexture - 1]));
-	this->parsedFaces.push_back(face);
+		vertex->addVT(VerticeTexture(this->parsedVerticesTexture[vtexture - 1]));
+	this->parsedVertex.push_back(vertex);
 }
 
-const std::vector<Face *> &Parser::getFaces() const { return this->parsedFaces; }
-void Parser::printFaces() const
+const std::vector<Vertex *> &Parser::getVertices() const { return this->parsedVertex; }
+void Parser::printVertices() const
 {
-	for(auto &f : this->parsedFaces)
+	for(auto &f : this->parsedVertex)
 		std::cout << *f << std::endl;
 }

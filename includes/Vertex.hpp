@@ -1,5 +1,5 @@
-#ifndef FACE_HPP
-# define FACE_HPP
+#ifndef VERTEX_HPP
+# define VERTEX_HPP
 
 #include <string>
 #include <vector>
@@ -7,11 +7,11 @@
 #include "Vertice.hpp"
 #include "VerticeTexture.hpp"
 
-class Face
+class Vertex
 {
 public:
-	Face();
-	~Face() {}
+	Vertex();
+	~Vertex() {}
 
 	void addV(const Vertice v);
 	void addVN(const Vertice vn);
@@ -21,7 +21,7 @@ public:
 	const std::vector<Vertice> &getVN() const;
 	const std::vector<VerticeTexture> &getVT() const;
 
-	friend std::ostream& operator<<(std::ostream& os, const Face& face);
+	friend std::ostream& operator<<(std::ostream& os, const Vertex& vertex);
 
 private:
 	std::vector<Vertice> v;

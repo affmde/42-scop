@@ -3,7 +3,7 @@
 
 #include <MLX42/MLX42.h>
 #include <vector>
-#include "Face.hpp"
+#include "Vertex.hpp"
 
 class Display
 {
@@ -11,10 +11,10 @@ public:
 	Display();
 	~Display() {}
 
-	void init(int width, int height, const std::vector<Face *> &faces);
+	void init(int width, int height, const std::vector<Vertex *> &vertices);
 	static void hook(void *param);
 
-	void drawFace(const std::vector<Face *> &faces);
+	void drawVertices(const std::vector<Vertex *> &vertices);
 
 private:
 	mlx_t *mlx;

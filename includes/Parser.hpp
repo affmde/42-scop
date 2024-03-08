@@ -6,7 +6,7 @@
 
 #include "Vertice.hpp"
 #include "VerticeTexture.hpp"
-#include "Face.hpp"
+#include "Vertex.hpp"
 
 class Parser
 {
@@ -15,9 +15,9 @@ public:
 	~Parser();
 
 	void readFile(std::string filePath);
-	const std::vector<Face *> &getFaces() const;
+	const std::vector<Vertex *> &getVertices() const;
 
-	void printFaces() const;
+	void printVertices() const;
 
 private:
 	std::vector<std::string> vertexNormals;
@@ -29,7 +29,7 @@ private:
 	std::vector<Vertice> parsedVerticesNormal;
 	std::vector<VerticeTexture> parsedVerticesTexture;
 
-	std::vector<Face *> parsedFaces;
+	std::vector<Vertex *> parsedVertex;
 
 	void parseLine(std::string line);
 	void parseVerticeLine(std::string &line);

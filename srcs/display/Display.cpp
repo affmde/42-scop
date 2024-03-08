@@ -4,7 +4,7 @@
 
 Display::Display() {}
 
-void Display::init(int width, int heigth, const std::vector<Face *> &faces)
+void Display::init(int width, int heigth, const std::vector<Vertex *> &vertices)
 {
 	mlx_set_setting(MLX_MAXIMIZED, true);
 	this->mlx = mlx_init(width, heigth, "42-scop", false);
@@ -15,7 +15,7 @@ void Display::init(int width, int heigth, const std::vector<Face *> &faces)
 	this->img = mlx_new_image(mlx, w, h);
 
 	//mlx_put_pixel(this->img, width * 0.5f, heigth * 0.5f, 0xFFFFFF);
-	this->drawFace(faces);
+	this->drawVertices(vertices);
 	mlx_image_to_window(this->mlx, this->img, 0, 0);
 	mlx_loop_hook(this->mlx, hook, this->mlx);
 	mlx_loop(this->mlx);
@@ -28,11 +28,11 @@ void Display::hook(void* param)
 	(void)mlx;
 }
 
-void Display::drawFace(const std::vector<Face *> &faces)
+void Display::drawVertices(const std::vector<Vertex *> &vertices)
 {
-	for(auto &face : faces)
+	for(auto &vertex : vertices)
 	{
-		for(auto &v : face->getV())
+		for(auto &v : vertex->getV())
 		{
 			mlx_put_pixel(this->img, 1900 * 0.5f + v.getX() * 250, 1080 * 0.5f - v.getY() * 250, 0xFFFFFF);
 		}

@@ -18,8 +18,8 @@ int main(int argc, char **argv)
 		Parser parser;
 		parser.readFile(argv[1]);
 		Display display;
-		const std::vector<Face *> &faces = parser.getFaces();
-		display.init(400, 400, faces);
+		const std::vector<Vertex *> &vertices = parser.getVertices();
+		display.init(400, 400, vertices);
 	} catch (std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return 0;
