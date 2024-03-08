@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "Vector3f.hpp"
-#include "VerticeTexture.hpp"
+#include "Vector2f.hpp"
 #include "Vertex.hpp"
 
 class Parser
@@ -27,7 +27,7 @@ private:
 
 	std::vector<Vector3f> parsedVertices;
 	std::vector<Vector3f> parsedVerticesNormal;
-	std::vector<VerticeTexture> parsedVerticesTexture;
+	std::vector<Vector2f> parsedVerticesTexture;
 
 	std::vector<Vertex *> parsedVertex;
 

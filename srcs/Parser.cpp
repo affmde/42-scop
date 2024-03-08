@@ -79,7 +79,7 @@ void Parser::parseVerticeTextureLine(std::string &line)
 
 	float x = std::stof(words[1]);
 	float y = std::stof(words[2]);
-	VerticeTexture vt(x, y);
+	Vector2f vt(x, y);
 	this->parsedVerticesTexture.push_back(vt);
 }
 
@@ -110,7 +110,7 @@ void Parser::parseFaceLine(std::string &line)
 	for(auto &vnormal : vn)
 		vertex->addVN(Vector3f(this->parsedVerticesNormal[vnormal - 1]));
 	for(auto &vtexture : vt)
-		vertex->addVT(VerticeTexture(this->parsedVerticesTexture[vtexture - 1]));
+		vertex->addVT(Vector2f(this->parsedVerticesTexture[vtexture - 1]));
 	this->parsedVertex.push_back(vertex);
 }
 
