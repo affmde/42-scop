@@ -9,11 +9,12 @@ COLOUR_END=\033[0m
 
 NAME	:= scope
 CFLAGS	:= -Wextra -Wall -Werror -Wunreachable-code -Ofast
-LIBMLX	:= libraries/MLX42
+GLFW	:= libraries/glfw
+GLEW	:= libraries/glew
 
-HEADERS	:= -I ./include -I $(LIBMLX)/include -I includes
-LIBS	:= $(LIBMLX)/build/libmlx42.a -ldl -lglfw -pthread -lm
-SRCS	:= $(shell find ./srcs -iname "*.cpp")
+HEADERS	:= -I includes -I $(GLFW)/files/include -I $(GLEW)/build/files/include
+LIBS	:= $(GLEW)/build/build/lib/libGLEW.a $(GLFW)/files/lib/libglfw3.a -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+SRCS	:= $(shell find ./srcs -iname "*.c")
 OBJS	:= ${SRCS:.cpp=.o}
 
 OBJS_DIR = obj/
@@ -29,26 +30,57 @@ ALL_SOURCES = $(CORE) $(GEOMETRY) $(DISPLAY)
 ALL_OBJS = $(ALL_SOURCES:.cpp=.o)
 OBJS = $(patsubst %, $(OBJS_DIR)%, $(ALL_OBJS))
 
-all: downloadMLX libmlx $(NAME)
+all: downloadGLFW glfw downloadGLEW glew $(NAME)
 
-libmlx:
-	@echo "$(COLOUR_BLUE)Checking MLX build" && \
-	cmake $(LIBMLX) -B $(LIBMLX)/build  && make -C $(LIBMLX)/build -j4 >/dev/null && \
-	echo "$(COLOUR_END)"
+glfw:
+	@if [ ! -d "$(GLFW)/files" ]; then \
+		echo "$(COLOUR_BLUE)Checking GLFW build" && \
+		cmake $(GLFW) -B $(GLFW)/build -DCMAKE_INSTALL_PREFIX=$(GLFW)/files \
+		-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF && \
+		make -C $(GLFW)/build && make install -C $(GLFW)/build && \
+		echo "$(COLOUR_END)"; \
+	else \
+		echo "$(COLOUR_GREEN)GLFW already built$(COLOUR_END)"; \
+	fi
+
+glew:
+	@if [ ! -d "$(GLEW)/build/files" ]; then \
+		echo "$(COLOUR_BLUE)Checking GLEW build" && \
+		cmake $(GLEW)/build/cmake -B $(GLEW)/build/build -DCMAKE_INSTALL_PREFIX=$(GLEW)/build/files && \
+		make -C $(GLEW)/build/build && make glew_s -C $(GLEW)/build/build && \
+		echo "$(COLOUR_END)" && \
+		mkdir -p $(GLEW)/build/files/lib && \
+		cp $(GLEW)/build/build/lib/libGLEW.a $(GLEW)/build/files/lib; \
+	else \
+		echo "$(COLOUR_GREEN)GLEW already built$(COLOUR_END)"; \
+	fi
 
 %.o: %.cpp
-	@echo "HERE!!!!!!!!!"
-	@$(CC) $(CFLAGS) -o $@ -c $< $(HEADERS)
+	@gcc $(CFLAGS) -o $@ -c $< $(HEADERS)
 
-downloadMLX:
+
+downloadGLFW:
 	@if [ ! -d "libraries" ]; then \
 		echo "$(COLOUR_GREEN)Creating libraries$(COLOUR_END)"; \
 		mkdir libraries; \
-		echo "Downloading MLX repository"; \
-		cd libraries && git clone https://github.com/codam-coding-college/MLX42.git; \
+		echo "Downloading GLFW repository"; \
+		cd libraries && git clone https://github.com/glfw/glfw.git; \
 	else \
-		echo "$(COLOUR_GREEN)MLX already present in libraries folder$(COLOUR_END)"; \
+		echo "$(COLOUR_GREEN)GLFW already present in libraries folder$(COLOUR_END)"; \
 	fi
+
+downloadGLEW:
+	@if [ ! -d "libraries/glew" ]; then \
+		echo "$(COLOUR_GREEN)Creating libraries$(COLOUR_END)"; \
+		mkdir libraries; \
+		echo "Downloading GLEW repository"; \
+		cd libraries && git clone https://github.com/Perlmint/glew-cmake.git glew; \
+	else \
+		echo "$(COLOUR_GREEN)GLEW already present in libraries folder$(COLOUR_END)"; \
+	fi
+
+cglue:
+	@$(CC) $(CFLAGS) -o $@ -c $< $(HEADERS)
 
 $(NAME): $(OBJS_DIR) $(OBJS)
 	@g++ $(CFLAGS) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME)
@@ -59,14 +91,16 @@ clean:
 	@echo "$(COLOUR_RED)Removed objs folder$(COLOUR_END)"
 
 fclean: clean
-	@rm -rf $(LIBMLX)
-	@echo "$(COLOUR_RED)Removed MLX42 folder$(COLOUR_END)"
+	@rm -rf $(GLEW)
+	@echo "$(COLOUR_RED)Removed GLEW folder$(COLOUR_END)"
+	@rm -rf $(GLFW)
+	@echo "$(COLOUR_RED)Removed GLFW folder$(COLOUR_END)"
 	@rm -rf libraries
 	@echo "$(COLOUR_RED)Removed libraries folder$(COLOUR_END)"
 	@rm -rf $(NAME)
 	@echo "$(COLOUR_RED)Removed executable$(COLOUR_END)"
 
-re: clean all
+re: fclean all
 
 .PHONY: all, clean, fclean, re, libmlx
 
@@ -85,3 +119,8 @@ $(OBJS_DIR)%.o: $(GEOMETRY_DIR)%.cpp
 $(OBJS_DIR)%.o: $(DISPLAY_DIR)%.cpp
 	@$(CXX) $(CFLAGS) -c $< -o $@ $(HEADERS)
 	@echo "$(COLOUR_BLUE)$@ created$(COLOUR_END)"
+
+glu: $(OBJS_DIR)glew.o
+
+$(OBJS_DIR)glew.o: srcs/glew.c | $(OBJS_DIR)
+	$(CC) $(CFLAGS) -o $@ -c $< $(HEADERS)
