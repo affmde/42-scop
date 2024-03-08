@@ -1,8 +1,8 @@
-#version 410 core
+#version 410
 
 in vec3 vs_position;
-in vec3 vs_color
-in vec2 textcoord;
+in vec3 vs_color;
+in vec2 texcoord;
 
 out vec4 fs_color;
 

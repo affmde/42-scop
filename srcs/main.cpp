@@ -29,12 +29,22 @@
 // 	return 0;
 // }
 
-#include <GL/glew.h>
+// #include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <GL/gl.h>
 #include <iostream>
 #include <fstream>
 #include <string>
+
+void updateInput()
+{
+	GLFWwindow *window = glfwGetCurrentContext();
+	if (!window)
+		return;
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
 
 void resizeWindow(GLFWwindow *window, int width, int heigth)
 {
@@ -64,24 +74,21 @@ bool loadShaders(GLuint &program)
 	else
 		std::cerr << "Error: Unable to open vertex_core.glsl" << std::endl;
 	file.close();
-	std::cout << "File closed" << std::endl;
+
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	std::cout << "Shader created\n";
 	const GLchar *vertSource = source.c_str();
-	std::cout << "vertsource\n";
 	glShaderSource(vertexShader, 1, &vertSource, NULL);
-	std::cout << "SHaderSource" << std::endl;
 	glCompileShader(vertexShader);
-	std::cout << "Compiled" << std::endl;
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "Infolog: " << infoLog << std::endl;
 		std::cerr << "Error: Unable to compile vertex shader" << std::endl;
+		std::cout << "Infolog: " << infoLog << std::endl;
 	}
 
-
+	line = "";
+	source = "";
 
 	//Fragment
 	file.open("srcs/shaders/fragment_core.glsl");
@@ -108,8 +115,8 @@ bool loadShaders(GLuint &program)
 	if (!success)
 	{
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "Infolog: " << infoLog << std::endl;
 		std::cerr << "Error: Unable to compile fragment shader" << std::endl;
+		std::cout << "Infolog: " << infoLog << std::endl;
 		loadSuccess = false;
 	}
 
@@ -126,8 +133,8 @@ bool loadShaders(GLuint &program)
 	if (!success)
 	{
 		glGetProgramInfoLog(program, 512, NULL, infoLog);
-		std::cout << "Infolog: " << infoLog << std::endl;
 		std::cerr << "Error: Unable to link program" << std::endl;
+		std::cout << "Infolog: " << infoLog << std::endl;
 		loadSuccess = false;
 	}
 
@@ -140,7 +147,6 @@ bool loadShaders(GLuint &program)
 
 int main(void)
 {
-	std::cout << "Program started" << std::endl;
     if (!glfwInit())
 	{
 		std::cout << "Error: glfwInit failed" << std::endl;
@@ -166,18 +172,25 @@ int main(void)
 	}
 
 	glfwSetFramebufferSizeCallback(window, resizeWindow);
-	// glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
-	// glViewport(0, 0, frameBufferWidth, frameBufferHeight);
 
 	glfwMakeContextCurrent(window);
 
-	glewExperimental = GL_TRUE;
-	if (glewInit() != GLEW_OK)
+	// GLAD INITIALIZER
+	if (!gladLoadGL())
 	{
-		std::cerr << "Error: glewInit failed" << std::endl;
+		std::cerr << "Failed to initialize GLAD" << std::endl;
 		glfwTerminate();
 		return 0;
 	}
+
+	//OPENGL OPTIONS
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//SHADER INIT
 	GLuint coreProgram;
@@ -191,6 +204,8 @@ int main(void)
 	{
 		glfwPollEvents();
 
+		updateInput();
+
 
 		glClearColor(0.13f, 0.25f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -200,7 +215,7 @@ int main(void)
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
-	glDeleteProgram(coreProgram);
+	//glDeleteProgram(coreProgram);
 
     return 0;
 }
