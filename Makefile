@@ -22,7 +22,7 @@ GEOMETRY_DIR = srcs/geometry/
 DISPLAY_DIR = srcs/display/
 
 CORE = main.cpp Parser.cpp Checker.cpp Utils.cpp
-GEOMETRY = Vertice.cpp VerticeTexture.cpp Vertex.cpp
+GEOMETRY = Vector2f.cpp VerticeTexture.cpp Vertex.cpp
 DISPLAY = Display.cpp
 
 ALL_SOURCES = $(CORE) $(GEOMETRY) $(DISPLAY)
