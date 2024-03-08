@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "Vector2f.hpp"
+#include "Vector3f.hpp"
 #include "VerticeTexture.hpp"
 #include "Vertex.hpp"
 
@@ -25,8 +25,8 @@ private:
 	std::vector<std::string> vertices;
 	std::vector<std::string> faces;
 
-	std::vector<Vector2f> parsedVertices;
-	std::vector<Vector2f> parsedVerticesNormal;
+	std::vector<Vector3f> parsedVertices;
+	std::vector<Vector3f> parsedVerticesNormal;
 	std::vector<VerticeTexture> parsedVerticesTexture;
 
 	std::vector<Vertex *> parsedVertex;

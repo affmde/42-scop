@@ -55,7 +55,7 @@ void Parser::parseVerticeLine(std::string &line)
 	float x = std::stof(words[1]);
 	float y = std::stof(words[2]);
 	float z = std::stof(words[3]);
-	Vector2f v(x, y, z);
+	Vector3f v(x, y, z);
 	this->parsedVertices.push_back(v);
 }
 void Parser::parseVerticeNormalLine(std::string &line)
@@ -67,7 +67,7 @@ void Parser::parseVerticeNormalLine(std::string &line)
 	float x = std::stof(words[1]);
 	float y = std::stof(words[2]);
 	float z = std::stof(words[3]);
-	Vector2f vn(x, y, z);
+	Vector3f vn(x, y, z);
 	this->parsedVerticesNormal.push_back(vn);
 }
 
@@ -106,9 +106,9 @@ void Parser::parseFaceLine(std::string &line)
 	}
 	Vertex *vertex = new Vertex();
 	for(auto &vertice : v)
-		vertex->addV(Vector2f(this->parsedVertices[vertice - 1]));
+		vertex->addV(Vector3f(this->parsedVertices[vertice - 1]));
 	for(auto &vnormal : vn)
-		vertex->addVN(Vector2f(this->parsedVerticesNormal[vnormal - 1]));
+		vertex->addVN(Vector3f(this->parsedVerticesNormal[vnormal - 1]));
 	for(auto &vtexture : vt)
 		vertex->addVT(VerticeTexture(this->parsedVerticesTexture[vtexture - 1]));
 	this->parsedVertex.push_back(vertex);
