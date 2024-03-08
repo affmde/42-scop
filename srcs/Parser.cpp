@@ -3,8 +3,15 @@
 
 #include "Parser.hpp"
 #include "Utils.hpp"
+#include "Face.hpp"
 
 Parser::Parser() {}
+Parser::~Parser() 
+{
+	for(auto &f : this->parsedFaces)
+		delete f;
+	this->parsedFaces.clear();
+}
 
 void Parser::readFile(std::string pathFile)
 {
@@ -22,8 +29,8 @@ void Parser::readFile(std::string pathFile)
 		this->parseVerticeNormalLine(line);
 	for(auto &line : this->vertexTexture)
 		this->parseVerticeTextureLine(line);
-	for(auto &v : this->parsedVerticesTexture)
-		std::cout << v << std::endl;
+	for(auto &line : this->faces)
+		this->parseFaceLine(line);
 }
 
 void Parser::parseLine(std::string line)
@@ -74,4 +81,42 @@ void Parser::parseVerticeTextureLine(std::string &line)
 	float y = std::stof(words[2]);
 	VerticeTexture vt(x, y);
 	this->parsedVerticesTexture.push_back(vt);
+}
+
+void Parser::parseFaceLine(std::string &line)
+{
+	std::vector<std::string> points = str_split(line, " ");
+	
+	points.erase(points.begin());
+	std::vector<unsigned int> v, vt, vn;
+
+	for(unsigned int i = 0; i < points.size(); i++)
+	{
+		std::vector<std::string> elements = str_split(points[i], "/");
+		for(unsigned int j = 0; j < elements.size(); j++)
+		{
+			int index = j % 3;
+			if (index == 0)
+				v.push_back(std::stoi(elements[j]));
+			else if (index == 1)
+				vt.push_back(std::stoi(elements[j]));
+			else
+				vn.push_back(std::stoi(elements[j]));
+		}
+	}
+	Face *face = new Face();
+	for(auto &vertice : v)
+		face->addV(Vertice(this->parsedVertices[vertice - 1]));
+	for(auto &vnormal : vn)
+		face->addVN(Vertice(this->parsedVerticesNormal[vnormal - 1]));
+	for(auto &vtexture : vt)
+		face->addVT(VerticeTexture(this->parsedVerticesTexture[vtexture - 1]));
+	this->parsedFaces.push_back(face);
+}
+
+const std::vector<Face *> &Parser::getFaces() const { return this->parsedFaces; }
+void Parser::printFaces() const
+{
+	for(auto &f : this->parsedFaces)
+		std::cout << *f << std::endl;
 }

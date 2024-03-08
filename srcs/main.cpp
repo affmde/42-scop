@@ -1,7 +1,9 @@
 #include <iostream>
+#include <MLX42/MLX42.h>
 
 #include "Checker.hpp"
-#include "Model.hpp"
+#include "Parser.hpp"
+#include "Display.hpp"
 
 int main(int argc, char **argv)
 {
@@ -13,8 +15,11 @@ int main(int argc, char **argv)
 	try {
 		Checker checker(argv[1], argv[2]);
 		checker.check();
-		Model model;
-		model.parse();
+		Parser parser;
+		parser.readFile(argv[1]);
+		Display display;
+		const std::vector<Face *> &faces = parser.getFaces();
+		display.init(400, 400, faces);
 	} catch (std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return 0;

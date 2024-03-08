@@ -19,11 +19,13 @@ OBJS	:= ${SRCS:.cpp=.o}
 OBJS_DIR = obj/
 CORE_DIR = srcs/
 GEOMETRY_DIR = srcs/geometry/
+DISPLAY_DIR = srcs/display/
 
-CORE = main.cpp Parser.cpp Checker.cpp Model.cpp Utils.cpp
-GEOMETRY = Vertice.cpp VerticeTexture.cpp
+CORE = main.cpp Parser.cpp Checker.cpp Utils.cpp
+GEOMETRY = Vertice.cpp VerticeTexture.cpp Face.cpp
+DISPLAY = Display.cpp
 
-ALL_SOURCES = $(CORE) $(GEOMETRY)
+ALL_SOURCES = $(CORE) $(GEOMETRY) $(DISPLAY)
 ALL_OBJS = $(ALL_SOURCES:.cpp=.o)
 OBJS = $(patsubst %, $(OBJS_DIR)%, $(ALL_OBJS))
 
@@ -77,5 +79,9 @@ $(OBJS_DIR)%.o: $(CORE_DIR)%.cpp
 	@echo "$(COLOUR_BLUE)$@ created$(COLOUR_END)"
 
 $(OBJS_DIR)%.o: $(GEOMETRY_DIR)%.cpp
+	@$(CXX) $(CFLAGS) -c $< -o $@ $(HEADERS)
+	@echo "$(COLOUR_BLUE)$@ created$(COLOUR_END)"
+
+$(OBJS_DIR)%.o: $(DISPLAY_DIR)%.cpp
 	@$(CXX) $(CFLAGS) -c $< -o $@ $(HEADERS)
 	@echo "$(COLOUR_BLUE)$@ created$(COLOUR_END)"
