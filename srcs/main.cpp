@@ -1,35 +1,3 @@
-// #include <iostream>
-// #include <MLX42/MLX42.h>
-
-// #include "Checker.hpp"
-// #include "Parser.hpp"
-// #include "Display.hpp"
-
-// int main(int argc, char **argv)
-// {
-// 	if (argc != 3)
-// 	{
-// 		std::cout << "Error: Not correct nuber of arguments" << std::endl;
-// 		return 0;
-// 	}
-// 	try {
-// 		Checker checker(argv[1], argv[2]);
-// 		checker.check();
-// 		Parser parser;
-// 		parser.readFile(argv[1]);
-// 		Display display;
-// 		const std::vector<Vertex *> &vertices = parser.getVertices();
-// 		display.init(400, 400, vertices);
-// 	} catch (std::exception &e) {
-// 		std::cerr << "Error: " << e.what() << std::endl;
-// 		return 0;
-// 	}
-	
-	
-// 	return 0;
-// }
-
-// #include <GL/glew.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <GL/gl.h>
@@ -38,6 +6,7 @@
 #include <string>
 
 #include "Vertex.hpp"
+#include "ShaderLoader.hpp"
 
 void updateInput()
 {
@@ -54,97 +23,6 @@ void resizeWindow(GLFWwindow *window, int width, int heigth)
 	glViewport(0, 0, width, heigth);
 }
 
-bool loadShaders(GLuint &program)
-{
-	bool loadSuccess = true;
-	char infoLog[512];
-	GLint success;
-
-	std::string line = "";
-	std::string source = "";
-	std::ifstream file;
-
-	//Vertex
-	file.open("srcs/shaders/vertex_core.glsl");
-	if (file.is_open())
-	{
-		while(std::getline(file, line))
-			source += line + "\n";
-	}
-	else
-		std::cerr << "Error: Unable to open vertex_core.glsl" << std::endl;
-	file.close();
-
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	const GLchar *vertSource = source.c_str();
-	glShaderSource(vertexShader, 1, &vertSource, NULL);
-	glCompileShader(vertexShader);
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cerr << "Error: Unable to compile vertex shader" << std::endl;
-		std::cout << "Infolog: " << infoLog << std::endl;
-	}
-
-	line = "";
-	source = "";
-
-	//Fragment
-	file.open("srcs/shaders/fragment_core.glsl");
-	if (file.is_open())
-	{
-		while(std::getline(file, line))
-		{
-			source += line + "\n";
-		}
-	}
-	else
-	{
-		loadSuccess = false;
-		std::cerr << "Error: Unable to open fragment_core.glsl" << std::endl;
-	}
-	file.close();
-
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	const GLchar *fragSource = source.c_str();
-	glShaderSource(fragmentShader, 1, &fragSource, NULL);
-	glCompileShader(fragmentShader);
-
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cerr << "Error: Unable to compile fragment shader" << std::endl;
-		std::cout << "Infolog: " << infoLog << std::endl;
-		loadSuccess = false;
-	}
-
-
-	//Program
-	program = glCreateProgram();
-
-	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
-
-	glLinkProgram(program);
-
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-	if (!success)
-	{
-		glGetProgramInfoLog(program, 512, NULL, infoLog);
-		std::cerr << "Error: Unable to link program" << std::endl;
-		std::cout << "Infolog: " << infoLog << std::endl;
-		loadSuccess = false;
-	}
-
-	//Clean up
-	glUseProgram(0);
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	return loadSuccess;
-}
-
 int main(void)
 {
     if (!glfwInit())
@@ -154,8 +32,6 @@ int main(void)
 	}
 	int screenWidth = 800;
 	int screenHeight = 600;
-	// int frameBufferWidth = 0;
-	// int frameBufferHeight = 0;
 
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -193,8 +69,9 @@ int main(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//SHADER INIT
+	ShaderLoader shadeLoader("srcs/shaders/vertex_core.glsl", "srcs/shaders/fragment_core.glsl");
 	GLuint coreProgram;
-	if(!loadShaders(coreProgram))
+	if(!shadeLoader.loadShaders(coreProgram))
 	{
 		glfwTerminate();
 		return 0;
@@ -222,9 +99,6 @@ int main(void)
 	testVertices[3].position = Vector3f(0.5f, 0.5f, 0.0f);
 	testVertices[3].color = Vector3f(1.0f, 1.0f, 0.0f);
 	testVertices[3].texcoord = Vector2f(0.0f, 0.0f);
-
-	for(auto &v : testVertices)
-		std::cout << v << std::endl;
 
 	// unsigned int nbrOfVertices = sizeof(testVertices) / sizeof(Vertex);
 	GLuint indices[] = { 0, 1, 2, 0, 2, 3};
@@ -267,6 +141,12 @@ int main(void)
 	glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);
+
+
+	//Textures
+	// int imageWidth = 0;
+	// int imageHeight = 0;
+	// unsigned char *image = SOIL_load_image("srcs/textures/wood.jpg", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
 
 	while(!glfwWindowShouldClose(window))
 	{
