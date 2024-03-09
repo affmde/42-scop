@@ -85,33 +85,34 @@ void Parser::parseVerticeTextureLine(std::string &line)
 
 void Parser::parseFaceLine(std::string &line)
 {
-	std::vector<std::string> points = str_split(line, " ");
+	(void)line;
+	// std::vector<std::string> points = str_split(line, " ");
 	
-	points.erase(points.begin());
-	std::vector<unsigned int> v, vt, vn;
+	// points.erase(points.begin());
+	// std::vector<unsigned int> v, vt, vn;
 
-	for(unsigned int i = 0; i < points.size(); i++)
-	{
-		std::vector<std::string> elements = str_split(points[i], "/");
-		for(unsigned int j = 0; j < elements.size(); j++)
-		{
-			int index = j % 3;
-			if (index == 0)
-				v.push_back(std::stoi(elements[j]));
-			else if (index == 1)
-				vt.push_back(std::stoi(elements[j]));
-			else
-				vn.push_back(std::stoi(elements[j]));
-		}
-	}
-	Vertex *vertex = new Vertex();
-	for(auto &vertice : v)
-		vertex->addV(Vector3f(this->parsedVertices[vertice - 1]));
-	for(auto &vnormal : vn)
-		vertex->addVN(Vector3f(this->parsedVerticesNormal[vnormal - 1]));
-	for(auto &vtexture : vt)
-		vertex->addVT(Vector2f(this->parsedVerticesTexture[vtexture - 1]));
-	this->parsedVertex.push_back(vertex);
+	// for(unsigned int i = 0; i < points.size(); i++)
+	// {
+	// 	std::vector<std::string> elements = str_split(points[i], "/");
+	// 	for(unsigned int j = 0; j < elements.size(); j++)
+	// 	{
+	// 		int index = j % 3;
+	// 		if (index == 0)
+	// 			v.push_back(std::stoi(elements[j]));
+	// 		else if (index == 1)
+	// 			vt.push_back(std::stoi(elements[j]));
+	// 		else
+	// 			vn.push_back(std::stoi(elements[j]));
+	// 	}
+	// }
+	// Vertex *vertex = new Vertex();
+	// for(auto &vertice : v)
+	// 	vertex->addV(Vector3f(this->parsedVertices[vertice - 1]));
+	// for(auto &vnormal : vn)
+	// 	vertex->addVN(Vector3f(this->parsedVerticesNormal[vnormal - 1]));
+	// for(auto &vtexture : vt)
+	// 	vertex->addVT(Vector2f(this->parsedVerticesTexture[vtexture - 1]));
+	// this->parsedVertex.push_back(vertex);
 }
 
 const std::vector<Vertex *> &Parser::getVertices() const { return this->parsedVertex; }

@@ -37,6 +37,8 @@
 #include <fstream>
 #include <string>
 
+#include "Vertex.hpp"
+
 void updateInput()
 {
 	GLFWwindow *window = glfwGetCurrentContext();
@@ -63,8 +65,6 @@ bool loadShaders(GLuint &program)
 	std::ifstream file;
 
 	//Vertex
-
-	//Shader
 	file.open("srcs/shaders/vertex_core.glsl");
 	if (file.is_open())
 	{
@@ -200,6 +200,74 @@ int main(void)
 		return 0;
 	}
 
+
+	/*
+	FOR EXEMPLE PURPOSE!!!
+	*/
+	Vertex testVertices[4];
+
+	testVertices[0].position = Vector3f(-0.5f, 0.5f, 0.0f);
+	testVertices[1].position = Vector3f(-0.5f, -0.5f, 0.0f);
+	testVertices[2].position = Vector3f(0.5f, -0.5f, 0.0f);
+
+	testVertices[0].color = Vector3f(1.0f, 0.0f, 0.0f);
+	testVertices[1].color = Vector3f(0.0f, 1.0f, 0.0f);
+	testVertices[2].color = Vector3f(0.0f, 0.0f, 1.0f);
+
+	testVertices[0].texcoord = Vector2f(0.5f, 1.0f);
+	testVertices[1].texcoord = Vector2f(0.0f, 0.0f);
+	testVertices[2].texcoord = Vector2f(1.0f, 0.0f);
+
+
+	testVertices[3].position = Vector3f(0.5f, 0.5f, 0.0f);
+	testVertices[3].color = Vector3f(1.0f, 1.0f, 0.0f);
+	testVertices[3].texcoord = Vector2f(0.0f, 0.0f);
+
+	for(auto &v : testVertices)
+		std::cout << v << std::endl;
+
+	// unsigned int nbrOfVertices = sizeof(testVertices) / sizeof(Vertex);
+	GLuint indices[] = { 0, 1, 2, 0, 2, 3};
+	unsigned int nbrOfIndices = sizeof(indices) / sizeof(GLuint);
+
+
+	/*************************/
+
+	//VAO -> VERTEX ARRAY OBJECT
+	GLuint VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	//VBO -> Vertex Buffer Object
+	GLuint VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(testVertices), testVertices, GL_STATIC_DRAW);
+
+	//EBO -> Element Buffer Object
+	GLuint EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	Vertex v;
+	//auto position = v.getPosition();
+	//GLvoid *pointerPosition = reinterpret_cast<GLvoid *>(&position);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+	glEnableVertexAttribArray(0);
+
+	//auto color = v.getColor();
+	//GLvoid *pointerColor = reinterpret_cast<GLvoid *>(&color);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+	glEnableVertexAttribArray(1);
+
+	//auto texcoord = v.getTexCoord();
+	//GLvoid *pointerTexCoord = reinterpret_cast<GLvoid *>(&texcoord);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
+	glEnableVertexAttribArray(2);
+
+	glBindVertexArray(0);
+
 	while(!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -209,6 +277,13 @@ int main(void)
 
 		glClearColor(0.13f, 0.25f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		glUseProgram(coreProgram);
+		glBindVertexArray(VAO);
+
+		//glDrawArrays(GL_TRIANGLES, 0, nbrOfVertices);
+		glDrawElements(GL_TRIANGLES, nbrOfIndices, GL_UNSIGNED_INT, 0);
+
 		glfwSwapBuffers(window);
 		glFlush();
 	}

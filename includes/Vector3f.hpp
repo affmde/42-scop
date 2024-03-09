@@ -6,8 +6,13 @@
 class Vector3f
 {
 public:
+	Vector3f();
 	Vector3f(float x, float y, float z);
-	Vector3f() {}
+
+	void set(float x, float y, float z);
+	void setX(float x);
+	void setY(float y);
+	void setZ(float z);
 
 	float getX() const;
 	float getY() const;

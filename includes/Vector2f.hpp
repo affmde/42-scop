@@ -6,11 +6,17 @@
 class Vector2f
 {
 public:
+	Vector2f();
 	Vector2f(float x, float y);
 	~Vector2f() {};
 
+	void set(float x, float y);
+	void setX(float x);
+	void setY(float y);
+
 	float getX() const;
 	float getY() const;
+
 private:
 	float x;
 	float y;

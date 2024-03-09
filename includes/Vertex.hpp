@@ -11,22 +11,13 @@ class Vertex
 {
 public:
 	Vertex();
-	~Vertex() {}
-
-	void addV(const Vector3f v);
-	void addVN(const Vector3f vn);
-	void addVT(const Vector2f vt);
-
-	const std::vector<Vector3f> &getV() const;
-	const std::vector<Vector3f> &getVN() const;
-	const std::vector<Vector2f> &getVT() const;
+	~Vertex();
 
 	friend std::ostream& operator<<(std::ostream& os, const Vertex& vertex);
 
-private:
-	std::vector<Vector3f> v;
-	std::vector<Vector3f> vn;
-	std::vector<Vector2f> vt;
+	Vector3f position;
+	Vector3f color;
+	Vector2f texcoord;
 };
 
 #endif
