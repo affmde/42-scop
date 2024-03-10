@@ -7,6 +7,7 @@
 
 #include "Vertex.hpp"
 #include "ShaderLoader.hpp"
+#include "Texture.hpp"
 
 void updateInput()
 {
@@ -144,9 +145,8 @@ int main(void)
 
 
 	//Textures
-	// int imageWidth = 0;
-	// int imageHeight = 0;
-	// unsigned char *image = SOIL_load_image("srcs/textures/wood.jpg", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	Texture texture;
+	texture.loadTexture("srcs/textures/wood.jpg");
 
 	while(!glfwWindowShouldClose(window))
 	{
@@ -160,6 +160,10 @@ int main(void)
 
 		glUseProgram(coreProgram);
 		glBindVertexArray(VAO);
+
+		//Activate Textures
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture.getTexture());
 
 		//glDrawArrays(GL_TRIANGLES, 0, nbrOfVertices);
 		glDrawElements(GL_TRIANGLES, nbrOfIndices, GL_UNSIGNED_INT, 0);
