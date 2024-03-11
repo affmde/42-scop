@@ -8,11 +8,12 @@ COLOUR_BLUE=\033[0;34m
 COLOUR_END=\033[0m
 
 NAME	:= scope
-CFLAGS	:= -Wextra -Wall -Werror -Wunreachable-code -Ofast
+CFLAGS	:= 
+#CFLAGS	:= -Wextra -Wall -Werror -Wunreachable-code -Ofast
 GLFW	:= libraries/glfw
 GLAD	:= libraries/glad
 
-HEADERS	:= -I includes -I $(GLEW)/build/files/include -I $(GLAD)/include
+HEADERS	:= -I includes -I $(GLEW)/build/files/include -I $(GLAD)/include -I libraries
 LIBS	:= $(GLFW)/files/lib/libglfw3.a -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 CSRCS	:= libraries/glad/src/glad.c
 

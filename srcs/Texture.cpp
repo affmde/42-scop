@@ -1,6 +1,7 @@
 #include "Texture.hpp"
 
 #include <iostream>
+#include <stb_images/stb_image.h>
 
 Texture::Texture()
 {
@@ -10,7 +11,7 @@ Texture::Texture()
 
 Texture::~Texture()
 {
-	glDeleteTextures(1, &this->texture);
+	//glDeleteTextures(1, &this->texture);
 }
 
 GLuint Texture::getTexture() const { return this->texture; }
@@ -21,7 +22,9 @@ bool Texture::loadTexture(std::string texturePath)
 
 	glGenTextures(1, &this->texture);
 	glBindTexture(GL_TEXTURE_2D, this->texture);
-	// TODO: LOAD IMAGE HERE!!!!
+
+	// TODO: LOAD IMAGE HERE. GET MY OWN PARSER!!!!
+	this->image = stbi_load(texturePath.c_str(), &this->width, &this->heigth, 0, STBI_rgb_alpha);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -40,6 +43,6 @@ bool Texture::loadTexture(std::string texturePath)
 	}
 	glActiveTexture(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	//TODO: Free the image;
+	stbi_image_free(this->image);
 	return true;
 }

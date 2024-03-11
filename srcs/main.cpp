@@ -9,11 +9,14 @@
 #include "ShaderLoader.hpp"
 #include "Texture.hpp"
 
-void updateInput()
+
+#define STB_IMAGE_IMPLEMENTATION
+ #include "stb_images/stb_image.h"
+ #define STB_IMAGE_WRITE_IMPLEMENTATION
+ #include "stb_images/stb_image_write.h"
+
+void updateInput(GLFWwindow *window)
 {
-	GLFWwindow *window = glfwGetCurrentContext();
-	if (!window)
-		return;
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
@@ -99,7 +102,7 @@ int main(void)
 
 	testVertices[3].position = Vector3f(0.5f, 0.5f, 0.0f);
 	testVertices[3].color = Vector3f(1.0f, 1.0f, 0.0f);
-	testVertices[3].texcoord = Vector2f(0.0f, 0.0f);
+	testVertices[3].texcoord = Vector2f(1.0f, 1.0f);
 
 	// unsigned int nbrOfVertices = sizeof(testVertices) / sizeof(Vertex);
 	GLuint indices[] = { 0, 1, 2, 0, 2, 3};
@@ -125,19 +128,13 @@ int main(void)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	Vertex v;
-	//auto position = v.getPosition();
-	//GLvoid *pointerPosition = reinterpret_cast<GLvoid *>(&position);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 	glEnableVertexAttribArray(0);
 
-	//auto color = v.getColor();
-	//GLvoid *pointerColor = reinterpret_cast<GLvoid *>(&color);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 	glEnableVertexAttribArray(1);
 
-	//auto texcoord = v.getTexCoord();
-	//GLvoid *pointerTexCoord = reinterpret_cast<GLvoid *>(&texcoord);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
 	glEnableVertexAttribArray(2);
 
@@ -146,35 +143,46 @@ int main(void)
 
 	//Textures
 	Texture texture;
-	texture.loadTexture("srcs/textures/wood.jpg");
+	texture.loadTexture("Textures/cat_mouse1.png");
 
 	while(!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
 
-		updateInput();
+		updateInput(window);
 
 
 		glClearColor(0.13f, 0.25f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		glUseProgram(coreProgram);
-		glBindVertexArray(VAO);
 
-		//Activate Textures
+		// //Update Uniforms
+		glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0);
+
+
+		// //Activate Textures
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture.getTexture());
+		
+		glBindVertexArray(VAO);
 
-		//glDrawArrays(GL_TRIANGLES, 0, nbrOfVertices);
+		// //glDrawArrays(GL_TRIANGLES, 0, nbrOfVertices);
 		glDrawElements(GL_TRIANGLES, nbrOfIndices, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glFlush();
+
+		glBindVertexArray(0);
+		glUseProgram(0);
+		glActiveTexture(0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
 	}
 
 	glfwDestroyWindow(window);
+	glDeleteProgram(coreProgram);
 	glfwTerminate();
-	//glDeleteProgram(coreProgram);
-
+	std::cout << "Program will return" << std::endl;
     return 0;
 }
