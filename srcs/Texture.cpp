@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stb_images/stb_image.h>
 
-Texture::Texture()
+Texture::Texture() : model(1.0f)
 {
 	this->width = 0;
 	this->heigth = 0;

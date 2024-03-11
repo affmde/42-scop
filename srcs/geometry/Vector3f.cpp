@@ -1,6 +1,13 @@
 #include "Vector3f.hpp"
 
 Vector3f::Vector3f() : x(0), y(0), z(0) {}
+Vector3f::Vector3f(float value)
+{
+	this->x = value;
+	this->y = value;
+	this->z = value;
+
+}
 Vector3f::Vector3f(float x, float y, float z)
 {
 	this->x = x;

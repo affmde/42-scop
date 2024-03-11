@@ -1,4 +1,5 @@
 #include "Utils.hpp"
+#include <cmath>
 
 std::vector<std::string> str_split(std::string line, std::string delimeter)
 {
@@ -14,4 +15,9 @@ std::vector<std::string> str_split(std::string line, std::string delimeter)
 	if (!line.empty())
 		vector.push_back(line);
 	return vector;
+}
+
+float toRadians(int deg)
+{
+	return (deg * M_PI) / 180;
 }

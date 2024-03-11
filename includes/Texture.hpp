@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 #include <string>
 
+#include <Mat4.hpp>
+
 
 class Texture
 {
@@ -20,6 +22,7 @@ private:
 	GLuint texture;
 	int width;
 	int heigth;
+	Mat4 model;
 };
 
 #endif

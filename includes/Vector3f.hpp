@@ -7,6 +7,7 @@ class Vector3f
 {
 public:
 	Vector3f();
+	Vector3f(float val);
 	Vector3f(float x, float y, float z);
 
 	void set(float x, float y, float z);

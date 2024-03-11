@@ -8,6 +8,7 @@
 #include "Vertex.hpp"
 #include "ShaderLoader.hpp"
 #include "Texture.hpp"
+#include "Utils.hpp"
 
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -145,6 +146,26 @@ int main(void)
 	Texture texture;
 	texture.loadTexture("Textures/cat_mouse1.png");
 
+
+	Vector3f position;
+	Vector3f rotation;
+	Vector3f scale(1.f);
+
+	//Translation;
+	Mat4 model(1.0f);
+	model = model.translate(position);
+	model = model.scale(scale);
+	model = model.rotate(toRadians(rotation.getX()), Vector3f(0.0f, 0.0f, 1.0f));
+	model = model.rotate(toRadians(rotation.getY()), Vector3f(0.0f, 1.0f, 0.0f));
+	model = model.rotate(toRadians(rotation.getZ()), Vector3f(1.0f, 0.0f, 0.0f));
+	model.printMatrix();
+	
+	glUseProgram(coreProgram);
+
+	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "model"), 1, GL_FALSE, &model.model[0][0]);
+
+	glUseProgram(0);
+
 	while(!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -160,6 +181,24 @@ int main(void)
 		// //Update Uniforms
 		glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0);
 
+		//Move, Rotate, scale
+		rotation.setY(rotation.getY() + 10.f);
+		position.setZ(position.getZ() - 10.f);
+		model.reset();
+		 
+		Mat4 rx = model.rotate(toRadians(rotation.getX()), Vector3f(1.0f, 0.0f, 0.0f));
+		Mat4 ry = model.rotate(toRadians(rotation.getY()), Vector3f(0.0f, 1.0f, 0.0f));
+		Mat4 rz = model.rotate(toRadians(rotation.getZ()), Vector3f(0.0f, 0.0f, 1.0f));
+		Mat4 tr = model.translate(position);
+		Mat4 sc = model.scale(scale);
+
+		model *= tr;
+		model *= rx;
+		model *= ry;
+		model *= rz;
+		model *= sc;
+
+		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "model"), 1, GL_FALSE, &model.model[0][0]);
 
 		// //Activate Textures
 		glActiveTexture(GL_TEXTURE0);
