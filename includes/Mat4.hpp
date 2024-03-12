@@ -3,7 +3,6 @@
 
 #include "Vector3f.hpp"
 
-
 class Mat4
 {
 public:

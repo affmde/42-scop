@@ -8,13 +8,7 @@ Mat4::Mat4(float val)
 {
 	bzero(&this->model, sizeof(this->model));
 	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			if (i == j)
-				this->model[i][j] = val;
-		}
-	}
+		this->model[i][i] = val;
 }
 
 Mat4 Mat4::translate(Vector3f translateVector)
@@ -122,11 +116,11 @@ Mat4 &Mat4::operator*=(const Mat4 &other)
 {
 	Mat4 newMat(1.0f);
 
-	for (int i = 0; i < 4; i++)
+	for (int j = 0; j < 4; j++)
 	{
-		for (int j = 0; j < 4; j++)
+		for (int i = 0; i < 4; i++)
 		{
-			newMat.model[i][j] = this->model[i][0] * other.model[0][j] +
+			newMat.model[j][i] = this->model[i][0] * other.model[0][j] +
 								 this->model[i][1] * other.model[1][j] +
 								 this->model[i][2] * other.model[2][j] +
 								 this->model[i][3] * other.model[3][j];

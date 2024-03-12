@@ -9,6 +9,8 @@ out vec3 vs_color;
 out vec2 vs_texcoord;
 
 uniform mat4 model;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 
 void main()
 {
@@ -16,5 +18,6 @@ void main()
 	vs_color = vertex_color;
 	vs_texcoord = vec2(vertex_texcoord.x, vertex_texcoord.y * -1.0f);
 
-	gl_Position = model * vec4(vertex_position, 1.f);
+	gl_Position = projectionMatrix * viewMatrix * model * vec4(vertex_position, 1.f);
+	//gl_Position = projectionMatrix * model * vec4(vertex_position, 1.f);
 }

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Vertex.hpp"
 #include "ShaderLoader.hpp"
@@ -53,6 +55,8 @@ int main(void)
 	}
 
 	glfwSetFramebufferSizeCallback(window, resizeWindow);
+	int frameBufferWidth, frameBufferHeigth;
+	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeigth);
 
 	glfwMakeContextCurrent(window);
 
@@ -151,18 +155,40 @@ int main(void)
 	Vector3f rotation;
 	Vector3f scale(1.f);
 
+	glm::vec3 g_position(0.f);
+	glm::vec3 g_rotation(0.f);
+
 	//Translation;
 	Mat4 model(1.0f);
 	model = model.translate(position);
 	model = model.scale(scale);
-	model = model.rotate(toRadians(rotation.getX()), Vector3f(0.0f, 0.0f, 1.0f));
-	model = model.rotate(toRadians(rotation.getY()), Vector3f(0.0f, 1.0f, 0.0f));
-	model = model.rotate(toRadians(rotation.getZ()), Vector3f(1.0f, 0.0f, 0.0f));
-	model.printMatrix();
+	model = model.rotate(toRadians(0), Vector3f(1.0f, 0.0f, 0.0f));
+	model = model.rotate(toRadians(2.f), Vector3f(0.0f, 1.0f, 0.0f));
+	model = model.rotate(toRadians(0), Vector3f(0.0f, 0.0f, 1.0f));
+
+	Vector3f camPosition(0.f, 0.f, 1.f);
+	Vector3f worldUp(0.f, 1.f, 0.f);
+	Vector3f camFront(0.f, 0.f, -1.f);
+
+	glm::vec3 camPos(0.f, 0.f, 1.f);
+	glm::vec3 wUp(0.f, 1.f, 0.f);
+	glm::vec3 camFrontt(0.f, 0.f, -1.f);
+
+	Mat4 viewMatrix(1.f);
+	viewMatrix = lookAt(camPosition, camPosition + camFront, worldUp);
+
+	float fov = 90.f;
+	float nearPlane = 0.1f;
+	float farPlane = 100.f;
+
+	Mat4 projectionMatrix(1.f);
+	projectionMatrix = perspective(fov, static_cast<float>(frameBufferWidth / frameBufferHeigth), nearPlane, farPlane);
 	
 	glUseProgram(coreProgram);
 
 	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "model"), 1, GL_FALSE, &model.model[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "viewMatrix"), 1, GL_FALSE, &viewMatrix.model[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix.model[0][0]);
 
 	glUseProgram(0);
 
@@ -182,15 +208,27 @@ int main(void)
 		glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0);
 
 		//Move, Rotate, scale
-		rotation.setY(rotation.getY() + 10.f);
-		position.setZ(position.getZ() - 10.f);
+
+		glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeigth);
+		projectionMatrix.reset();
+		projectionMatrix = perspective(fov, static_cast<float>(frameBufferWidth) / frameBufferHeigth, nearPlane, farPlane);
+		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix.model[0][0]);
+		
+		rotation.setY(rotation.getY() - 2.f);
+		position.setZ(position.getZ() - 0.01f);
 		model.reset();
-		 
+		Mat4 tr = model.translate(position);
 		Mat4 rx = model.rotate(toRadians(rotation.getX()), Vector3f(1.0f, 0.0f, 0.0f));
 		Mat4 ry = model.rotate(toRadians(rotation.getY()), Vector3f(0.0f, 1.0f, 0.0f));
 		Mat4 rz = model.rotate(toRadians(rotation.getZ()), Vector3f(0.0f, 0.0f, 1.0f));
-		Mat4 tr = model.translate(position);
 		Mat4 sc = model.scale(scale);
+
+		glm::mat4 g_model(1.f);
+		g_model = glm::translate(g_model, g_position);
+		g_model = glm::rotate(g_model, glm::radians(g_rotation.x), glm::vec3(1.f, 0.f, 0.f));
+		g_model = glm::rotate(g_model, glm::radians(g_rotation.y), glm::vec3(0.f, 1.f, 0.f));
+		g_model = glm::rotate(g_model, glm::radians(g_rotation.z), glm::vec3(0.f, 0.f, 1.f));
+		g_model = glm::scale(g_model, glm::vec3(1.f));
 
 		model *= tr;
 		model *= rx;
@@ -222,6 +260,5 @@ int main(void)
 	glfwDestroyWindow(window);
 	glDeleteProgram(coreProgram);
 	glfwTerminate();
-	std::cout << "Program will return" << std::endl;
-    return 0;
+	return 0;
 }
