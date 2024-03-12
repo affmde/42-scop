@@ -18,6 +18,7 @@ public:
 	Vector3f position;
 	Vector3f color;
 	Vector2f texcoord;
+	Vector3f normal;
 };
 
 #endif

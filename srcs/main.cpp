@@ -5,7 +5,6 @@
 #include <fstream>
 #include <string>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 #include "Vertex.hpp"
 #include "ShaderLoader.hpp"
@@ -28,6 +27,38 @@ void resizeWindow(GLFWwindow *window, int width, int heigth)
 {
 	(void)window;
 	glViewport(0, 0, width, heigth);
+}
+
+void handleInput(GLFWwindow *window, Vector3f &position, Vector3f &rotation, Vector3f &scale)
+{
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		position.z -= 0.01f;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		position.z += 0.01f;
+	if  (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		position.x -= 0.01f;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		position.x += 0.01f;
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		rotation.y += 1.f;
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		rotation.y -= 1.f;
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		rotation.x += 1.f;
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		rotation.x -= 1.f;
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+	{
+		scale.x += 0.01f;
+		scale.y += 0.01f;
+		scale.z += 0.01f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+	{
+		scale.x -= 0.01f;
+		scale.y -= 0.01f;
+		scale.z -= 0.01f;
+	}
 }
 
 int main(void)
@@ -109,6 +140,11 @@ int main(void)
 	testVertices[3].color = Vector3f(1.0f, 1.0f, 0.0f);
 	testVertices[3].texcoord = Vector2f(1.0f, 1.0f);
 
+	testVertices[0].normal = Vector3f(0.0f, 0.0f, -1.0f);
+	testVertices[1].normal = Vector3f(0.0f, 0.0f, -1.0f);
+	testVertices[2].normal = Vector3f(0.0f, 0.0f, -1.0f);
+	testVertices[3].normal = Vector3f(0.0f, 0.0f, -1.0f);
+
 	// unsigned int nbrOfVertices = sizeof(testVertices) / sizeof(Vertex);
 	GLuint indices[] = { 0, 1, 2, 0, 2, 3};
 	unsigned int nbrOfIndices = sizeof(indices) / sizeof(GLuint);
@@ -143,6 +179,9 @@ int main(void)
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
 	glEnableVertexAttribArray(2);
 
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));
+	glEnableVertexAttribArray(3);
+
 	glBindVertexArray(0);
 
 
@@ -155,24 +194,11 @@ int main(void)
 	Vector3f rotation;
 	Vector3f scale(1.f);
 
-	glm::vec3 g_position(0.f);
-	glm::vec3 g_rotation(0.f);
-
-	//Translation;
-	Mat4 model(1.0f);
-	model = model.translate(position);
-	model = model.scale(scale);
-	model = model.rotate(toRadians(0), Vector3f(1.0f, 0.0f, 0.0f));
-	model = model.rotate(toRadians(2.f), Vector3f(0.0f, 1.0f, 0.0f));
-	model = model.rotate(toRadians(0), Vector3f(0.0f, 0.0f, 1.0f));
+	Mat4 model(1.f);
 
 	Vector3f camPosition(0.f, 0.f, 1.f);
 	Vector3f worldUp(0.f, 1.f, 0.f);
 	Vector3f camFront(0.f, 0.f, -1.f);
-
-	glm::vec3 camPos(0.f, 0.f, 1.f);
-	glm::vec3 wUp(0.f, 1.f, 0.f);
-	glm::vec3 camFrontt(0.f, 0.f, -1.f);
 
 	Mat4 viewMatrix(1.f);
 	viewMatrix = lookAt(camPosition, camPosition + camFront, worldUp);
@@ -184,18 +210,21 @@ int main(void)
 	Mat4 projectionMatrix(1.f);
 	projectionMatrix = perspective(fov, static_cast<float>(frameBufferWidth / frameBufferHeigth), nearPlane, farPlane);
 	
+	//LIGHTS
+	Vector3f lightPos0(0.f, 0.f, 2.f);
+
 	glUseProgram(coreProgram);
 
 	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "model"), 1, GL_FALSE, &model.model[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "viewMatrix"), 1, GL_FALSE, &viewMatrix.model[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix.model[0][0]);
-
+	glUniform3fv(glGetUniformLocation(coreProgram, "lightPosition"), 1, reinterpret_cast<GLfloat*>(&lightPos0));
 	glUseProgram(0);
 
 	while(!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
-
+		handleInput(window, position, rotation, scale);
 		updateInput(window);
 
 
@@ -214,8 +243,6 @@ int main(void)
 		projectionMatrix = perspective(fov, static_cast<float>(frameBufferWidth) / frameBufferHeigth, nearPlane, farPlane);
 		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix.model[0][0]);
 		
-		rotation.y += 2.f;
-		position.z -= 0.01f;
 		model.reset();
 		Mat4 tr = model.translate(position);
 		Mat4 rx = model.rotate(toRadians(rotation.x), Vector3f(1.0f, 0.0f, 0.0f));
