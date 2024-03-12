@@ -15,16 +15,18 @@ public:
 	~Texture();
 
 	GLuint getTexture() const;
-	bool loadTexture(std::string texturePath, GLenum type);
-	void bind(int texture_unit, GLenum tpye);
-	void unbind(GLenum type);
+	bool loadTexture(std::string texturePath, GLenum type, unsigned int textureUnit);
+	void bind();
+	void unbind();
+	int getTextureUnit() const;
 
 private:
 	unsigned char *image;
 	GLuint texture;
 	int width;
 	int heigth;
-	Mat4 model;
+	int textureUnit;
+	unsigned int type;
 };
 
 #endif

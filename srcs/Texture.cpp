@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stb_images/stb_image.h>
 
-Texture::Texture() : model(1.0f)
+Texture::Texture()
 {
 	this->width = 0;
 	this->heigth = 0;
@@ -16,9 +16,10 @@ Texture::~Texture()
 
 GLuint Texture::getTexture() const { return this->texture; }
 
-bool Texture::loadTexture(std::string texturePath, GLenum type)
+bool Texture::loadTexture(std::string texturePath, GLenum type, unsigned int textureUnit)
 {
-	(void)texturePath;
+	this->textureUnit = textureUnit;
+	this->type = type;
 
 	glGenTextures(1, &this->texture);
 	glBindTexture(type, this->texture);
@@ -41,19 +42,21 @@ bool Texture::loadTexture(std::string texturePath, GLenum type)
 		glTexImage2D(type, 0, GL_RGBA, this->width, this->heigth, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->image);
 		glGenerateMipmap(type);
 	}
-	this->bind(type, 0);
+	this->bind();
 	stbi_image_free(this->image);
 	return true;
 }
 
-void Texture::bind(int texture_unit, GLenum type)
+void Texture::bind()
 {
-	glActiveTexture(GL_TEXTURE0 + texture_unit);
-	glBindTexture(type, this->texture);
+	glActiveTexture(GL_TEXTURE0 + this->textureUnit);
+	glBindTexture(this->type, this->texture);
 }
 
-void Texture::unbind(GLenum type)
+void Texture::unbind()
 {
 	glActiveTexture(0);
-	glBindTexture(type, 0);
+	glBindTexture(this->type, 0);
 }
+
+int Texture::getTextureUnit() const { return this->textureUnit; }

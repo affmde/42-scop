@@ -10,6 +10,7 @@
 #include "ShaderLoader.hpp"
 #include "Texture.hpp"
 #include "Utils.hpp"
+#include "Material.hpp"
 
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -181,7 +182,10 @@ int main(void)
 
 	//Textures
 	Texture texture;
-	texture.loadTexture("Textures/cat_mouse1.png", GL_TEXTURE_2D);
+	texture.loadTexture("Textures/cat_mouse1.png", GL_TEXTURE_2D, 0);
+
+	//Material
+	Material material(Vector3f(0.1f), Vector3f(1.0f), Vector3f(0.5f), texture.getTextureUnit(), 1);
 
 
 	Vector3f position;
@@ -225,7 +229,8 @@ int main(void)
 
 
 		//Update Uniforms
-		coreProgram.set1i(0, "texture0");
+		coreProgram.set1i(texture.getTextureUnit(), "texture0");
+		material.sendToShader(coreProgram);
 
 		//Move, Rotate, scale
 		glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeigth);
@@ -252,8 +257,8 @@ int main(void)
 		coreProgram.use();
 		//Activate Textures
 
-		texture.bind(0, GL_TEXTURE_2D);
-		
+		texture.bind();
+
 		glBindVertexArray(VAO);
 
 		//glDrawArrays(GL_TRIANGLES, 0, nbrOfVertices);
@@ -264,7 +269,7 @@ int main(void)
 
 		glBindVertexArray(0);
 		glUseProgram(0);
-		texture.unbind(GL_TEXTURE_2D);
+		texture.unbind();
 
 	}
 
