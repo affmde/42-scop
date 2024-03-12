@@ -111,13 +111,6 @@ int main(void)
 	//SHADER INIT
 	ShaderLoader coreProgram("srcs/shaders/vertex_core.glsl", "srcs/shaders/fragment_core.glsl");
 	coreProgram.use();
-	// GLuint coreProgram;
-	// if(!shadeLoader.loadShaders(coreProgram))
-	// {
-	// 	glfwTerminate();
-	// 	return 0;
-	// }
-
 
 	/*
 	FOR EXEMPLE PURPOSE!!!
@@ -188,7 +181,7 @@ int main(void)
 
 	//Textures
 	Texture texture;
-	texture.loadTexture("Textures/cat_mouse1.png");
+	texture.loadTexture("Textures/cat_mouse1.png", GL_TEXTURE_2D);
 
 
 	Vector3f position;
@@ -219,13 +212,6 @@ int main(void)
 	coreProgram.setMat4(projectionMatrix, "projectionMatrix");
 	coreProgram.setVector3f(lightPos0, "lightPosition");
 	coreProgram.setVector3f(camPosition, "cameraPos");
-
-	// glUniformMatrix4fv(glGetUniformLocation(coreProgram, "model"), 1, GL_FALSE, &model.model[0][0]);
-	// glUniformMatrix4fv(glGetUniformLocation(coreProgram, "viewMatrix"), 1, GL_FALSE, &viewMatrix.model[0][0]);
-	// glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix.model[0][0]);
-	// glUniform3fv(glGetUniformLocation(coreProgram, "lightPosition"), 1, reinterpret_cast<GLfloat*>(&lightPos0));
-	// glUniform3fv(glGetUniformLocation(coreProgram, "cameraPos"), 1, reinterpret_cast<GLfloat*>(&camPosition));
-	// glUseProgram(0);
 
 	while(!glfwWindowShouldClose(window))
 	{
@@ -265,8 +251,8 @@ int main(void)
 
 		coreProgram.use();
 		//Activate Textures
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture.getTexture());
+
+		texture.bind(0, GL_TEXTURE_2D);
 		
 		glBindVertexArray(VAO);
 
@@ -278,8 +264,7 @@ int main(void)
 
 		glBindVertexArray(0);
 		glUseProgram(0);
-		glActiveTexture(0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		texture.unbind(GL_TEXTURE_2D);
 
 	}
 

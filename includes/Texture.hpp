@@ -15,7 +15,9 @@ public:
 	~Texture();
 
 	GLuint getTexture() const;
-	bool loadTexture(std::string texturePath);
+	bool loadTexture(std::string texturePath, GLenum type);
+	void bind(int texture_unit, GLenum tpye);
+	void unbind(GLenum type);
 
 private:
 	unsigned char *image;

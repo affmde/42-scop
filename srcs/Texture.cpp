@@ -11,25 +11,25 @@ Texture::Texture() : model(1.0f)
 
 Texture::~Texture()
 {
-	//glDeleteTextures(1, &this->texture);
+	// glDeleteTextures(1, &this->texture);
 }
 
 GLuint Texture::getTexture() const { return this->texture; }
 
-bool Texture::loadTexture(std::string texturePath)
+bool Texture::loadTexture(std::string texturePath, GLenum type)
 {
 	(void)texturePath;
 
 	glGenTextures(1, &this->texture);
-	glBindTexture(GL_TEXTURE_2D, this->texture);
+	glBindTexture(type, this->texture);
 
 	// TODO: LOAD IMAGE HERE. GET MY OWN PARSER!!!!
 	this->image = stbi_load(texturePath.c_str(), &this->width, &this->heigth, 0, STBI_rgb_alpha);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	if (!this->image)
 	{
@@ -38,11 +38,22 @@ bool Texture::loadTexture(std::string texturePath)
 	}
 	else
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->heigth, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->image);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexImage2D(type, 0, GL_RGBA, this->width, this->heigth, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->image);
+		glGenerateMipmap(type);
 	}
-	glActiveTexture(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	this->bind(type, 0);
 	stbi_image_free(this->image);
 	return true;
+}
+
+void Texture::bind(int texture_unit, GLenum type)
+{
+	glActiveTexture(GL_TEXTURE0 + texture_unit);
+	glBindTexture(type, this->texture);
+}
+
+void Texture::unbind(GLenum type)
+{
+	glActiveTexture(0);
+	glBindTexture(type, 0);
 }
