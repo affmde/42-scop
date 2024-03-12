@@ -109,13 +109,14 @@ int main(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//SHADER INIT
-	ShaderLoader shadeLoader("srcs/shaders/vertex_core.glsl", "srcs/shaders/fragment_core.glsl");
-	GLuint coreProgram;
-	if(!shadeLoader.loadShaders(coreProgram))
-	{
-		glfwTerminate();
-		return 0;
-	}
+	ShaderLoader coreProgram("srcs/shaders/vertex_core.glsl", "srcs/shaders/fragment_core.glsl");
+	coreProgram.use();
+	// GLuint coreProgram;
+	// if(!shadeLoader.loadShaders(coreProgram))
+	// {
+	// 	glfwTerminate();
+	// 	return 0;
+	// }
 
 
 	/*
@@ -140,10 +141,10 @@ int main(void)
 	testVertices[3].color = Vector3f(1.0f, 1.0f, 0.0f);
 	testVertices[3].texcoord = Vector2f(1.0f, 1.0f);
 
-	testVertices[0].normal = Vector3f(0.0f, 0.0f, -1.0f);
-	testVertices[1].normal = Vector3f(0.0f, 0.0f, -1.0f);
-	testVertices[2].normal = Vector3f(0.0f, 0.0f, -1.0f);
-	testVertices[3].normal = Vector3f(0.0f, 0.0f, -1.0f);
+	testVertices[0].normal = Vector3f(0.0f, 0.0f, 1.0f);
+	testVertices[1].normal = Vector3f(0.0f, 0.0f, 1.0f);
+	testVertices[2].normal = Vector3f(0.0f, 0.0f, 1.0f);
+	testVertices[3].normal = Vector3f(0.0f, 0.0f, 1.0f);
 
 	// unsigned int nbrOfVertices = sizeof(testVertices) / sizeof(Vertex);
 	GLuint indices[] = { 0, 1, 2, 0, 2, 3};
@@ -211,15 +212,20 @@ int main(void)
 	projectionMatrix = perspective(fov, static_cast<float>(frameBufferWidth / frameBufferHeigth), nearPlane, farPlane);
 	
 	//LIGHTS
-	Vector3f lightPos0(0.f, 0.f, 2.f);
+	Vector3f lightPos0(0.f, 0.f, 1.f);
 
-	glUseProgram(coreProgram);
+	coreProgram.setMat4(model, "model");
+	coreProgram.setMat4(viewMatrix, "viewMatrix");
+	coreProgram.setMat4(projectionMatrix, "projectionMatrix");
+	coreProgram.setVector3f(lightPos0, "lightPosition");
+	coreProgram.setVector3f(camPosition, "cameraPos");
 
-	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "model"), 1, GL_FALSE, &model.model[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "viewMatrix"), 1, GL_FALSE, &viewMatrix.model[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix.model[0][0]);
-	glUniform3fv(glGetUniformLocation(coreProgram, "lightPosition"), 1, reinterpret_cast<GLfloat*>(&lightPos0));
-	glUseProgram(0);
+	// glUniformMatrix4fv(glGetUniformLocation(coreProgram, "model"), 1, GL_FALSE, &model.model[0][0]);
+	// glUniformMatrix4fv(glGetUniformLocation(coreProgram, "viewMatrix"), 1, GL_FALSE, &viewMatrix.model[0][0]);
+	// glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix.model[0][0]);
+	// glUniform3fv(glGetUniformLocation(coreProgram, "lightPosition"), 1, reinterpret_cast<GLfloat*>(&lightPos0));
+	// glUniform3fv(glGetUniformLocation(coreProgram, "cameraPos"), 1, reinterpret_cast<GLfloat*>(&camPosition));
+	// glUseProgram(0);
 
 	while(!glfwWindowShouldClose(window))
 	{
@@ -231,17 +237,15 @@ int main(void)
 		glClearColor(0.13f, 0.25f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		glUseProgram(coreProgram);
 
-		// //Update Uniforms
-		glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0);
+		//Update Uniforms
+		coreProgram.set1i(0, "texture0");
 
 		//Move, Rotate, scale
-
 		glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeigth);
 		projectionMatrix.reset();
 		projectionMatrix = perspective(fov, static_cast<float>(frameBufferWidth) / frameBufferHeigth, nearPlane, farPlane);
-		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix.model[0][0]);
+		coreProgram.setMat4(projectionMatrix, "projectionMatrix");
 		
 		model.reset();
 		Mat4 tr = model.translate(position);
@@ -256,15 +260,17 @@ int main(void)
 		model *= rz;
 		model *= sc;
 
-		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "model"), 1, GL_FALSE, &model.model[0][0]);
+		// glUniformMatrix4fv(glGetUniformLocation(coreProgram, "model"), 1, GL_FALSE, &model.model[0][0]);
+		coreProgram.setMat4(model, "model");
 
-		// //Activate Textures
+		coreProgram.use();
+		//Activate Textures
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture.getTexture());
 		
 		glBindVertexArray(VAO);
 
-		// //glDrawArrays(GL_TRIANGLES, 0, nbrOfVertices);
+		//glDrawArrays(GL_TRIANGLES, 0, nbrOfVertices);
 		glDrawElements(GL_TRIANGLES, nbrOfIndices, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
@@ -278,7 +284,6 @@ int main(void)
 	}
 
 	glfwDestroyWindow(window);
-	glDeleteProgram(coreProgram);
 	glfwTerminate();
 	return 0;
 }
