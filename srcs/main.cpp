@@ -214,21 +214,14 @@ int main(void)
 		projectionMatrix = perspective(fov, static_cast<float>(frameBufferWidth) / frameBufferHeigth, nearPlane, farPlane);
 		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix.model[0][0]);
 		
-		rotation.setY(rotation.getY() - 2.f);
-		position.setZ(position.getZ() - 0.01f);
+		rotation.y += 2.f;
+		position.z -= 0.01f;
 		model.reset();
 		Mat4 tr = model.translate(position);
-		Mat4 rx = model.rotate(toRadians(rotation.getX()), Vector3f(1.0f, 0.0f, 0.0f));
-		Mat4 ry = model.rotate(toRadians(rotation.getY()), Vector3f(0.0f, 1.0f, 0.0f));
-		Mat4 rz = model.rotate(toRadians(rotation.getZ()), Vector3f(0.0f, 0.0f, 1.0f));
+		Mat4 rx = model.rotate(toRadians(rotation.x), Vector3f(1.0f, 0.0f, 0.0f));
+		Mat4 ry = model.rotate(toRadians(rotation.y), Vector3f(0.0f, 1.0f, 0.0f));
+		Mat4 rz = model.rotate(toRadians(rotation.z), Vector3f(0.0f, 0.0f, 1.0f));
 		Mat4 sc = model.scale(scale);
-
-		glm::mat4 g_model(1.f);
-		g_model = glm::translate(g_model, g_position);
-		g_model = glm::rotate(g_model, glm::radians(g_rotation.x), glm::vec3(1.f, 0.f, 0.f));
-		g_model = glm::rotate(g_model, glm::radians(g_rotation.y), glm::vec3(0.f, 1.f, 0.f));
-		g_model = glm::rotate(g_model, glm::radians(g_rotation.z), glm::vec3(0.f, 0.f, 1.f));
-		g_model = glm::scale(g_model, glm::vec3(1.f));
 
 		model *= tr;
 		model *= rx;

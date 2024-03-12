@@ -13,22 +13,13 @@ public:
 	Vector3f operator+(const Vector3f &other);
 	Vector3f operator-(const Vector3f &other);
 
-	void set(float x, float y, float z);
-	void setX(float x);
-	void setY(float y);
-	void setZ(float z);
-
-	float getX() const;
-	float getY() const;
-	float getZ() const;
-
 	Vector3f cross(Vector3f &other);
 	Vector3f normalize();
 
-private:
 	float x;
 	float y;
 	float z;
+private:
 };
 
 std::ostream &operator<<(std::ostream &os, const Vector3f &vec);

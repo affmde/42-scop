@@ -28,26 +28,12 @@ Vector3f Vector3f::operator-(const Vector3f &other)
 }
 Vector3f operator-(const Vector3f &lhs, const Vector3f &rhs)
 {
-	return (Vector3f(lhs.getX() - rhs.getX(), lhs.getY() - rhs.getY(), lhs.getZ() - rhs.getZ()));
+	return (Vector3f(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z));
 }
-
-float Vector3f::getX() const { return this->x; }
-float Vector3f::getY() const { return this->y; }
-float Vector3f::getZ() const { return this->z; }
-
-void Vector3f::set(float x, float y, float z)
-{
-	this->x = x;
-	this->y = y;
-	this->z = z;
-}
-void Vector3f::setX(float x) { this->x = x; }
-void Vector3f::setY(float y) { this->y = y; }
-void Vector3f::setZ(float z) { this->z = z; }
 
 std::ostream &operator<<(std::ostream &os, const Vector3f &vec)
 {
-	return os << "x: " << vec.getX() << " y: " << vec.getY() << " z: " << vec.getZ();
+	return os << "x: " << vec.x << " y: " << vec.y << " z: " << vec.z;
 }
 
 Vector3f Vector3f::cross(Vector3f &other)

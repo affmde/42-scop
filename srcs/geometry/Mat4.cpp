@@ -15,9 +15,9 @@ Mat4 Mat4::translate(Vector3f translateVector)
 {
 	Mat4 newMat(1.0f);
 
-	newMat.model[0][3] = translateVector.getX();
-	newMat.model[1][3] = translateVector.getY();
-	newMat.model[2][3] = translateVector.getZ();
+	newMat.model[0][3] = translateVector.x;
+	newMat.model[1][3] = translateVector.y;
+	newMat.model[2][3] = translateVector.z;
 	return newMat;
 }
 Mat4 Mat4::translate(float x, float y, float z)
@@ -34,9 +34,9 @@ Mat4 Mat4::scale(Vector3f scaleVector)
 {
 	Mat4 newMat(1.0f);
 
-	newMat.model[0][0] = scaleVector.getX();
-	newMat.model[1][1] = scaleVector.getY();
-	newMat.model[2][2] = scaleVector.getZ();
+	newMat.model[0][0] = scaleVector.x;
+	newMat.model[1][1] = scaleVector.y;
+	newMat.model[2][2] = scaleVector.z;
 	return newMat;
 }
 Mat4 Mat4::scale(float x, float y, float z)
@@ -66,9 +66,9 @@ Mat4 Mat4::rotate(float angle, Vector3f axis)
 	float s = sin(angle);
 	float t = 1 - c;
 
-	float x = axis.getX();
-	float y = axis.getY();
-	float z = axis.getZ();
+	float x = axis.x;
+	float y = axis.y;
+	float z = axis.z;
 
 	newMat.model[0][0] = t * x * x + c;
 	newMat.model[0][1] = t * x * y - s * z;
