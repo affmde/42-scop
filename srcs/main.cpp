@@ -13,6 +13,7 @@
 #include "Mesh.hpp"
 #include "Triangle.hpp"
 #include "Quad.hpp"
+#include "Window.hpp"
 
 #define SPEED 0.05f
 
@@ -58,6 +59,11 @@ void handleInput(GLFWwindow *window, Mesh &mesh)
 		mesh.zoom(Vector3f(-SPEED));
 }
 
+// GLFWwindow *createWindow(const int width, const int height, int &widthBuffer, int &heigthBuffer, std::string title)
+// {
+
+// }
+
 int main(void)
 {
     if (!glfwInit())
@@ -68,25 +74,28 @@ int main(void)
 	int screenWidth = 800;
 	int screenHeight = 600;
 
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+
+	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	// glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	// glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);   FOR MACOS
 
-	GLFWwindow *window = glfwCreateWindow(screenWidth, screenHeight, "42-Scop", NULL, NULL);
-	if (!window)
+	Window window(screenWidth, screenHeight, "42-Scop");
+	// GLFWwindow *window = glfwCreateWindow(screenWidth, screenHeight, "42-Scop", NULL, NULL);
+	if (!window.getWindow())
 	{
 		std::cerr << "Failed to create a window" << std::endl;
 		glfwTerminate();
 		return 0;
 	}
 
-	glfwSetFramebufferSizeCallback(window, resizeWindow);
-	int frameBufferWidth, frameBufferHeigth;
-	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeigth);
+	// glfwSetFramebufferSizeCallback(window, resizeWindow);
+	// glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeigth);
 
-	glfwMakeContextCurrent(window);
+	// glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window.getWindow(), resizeWindow);
+	glfwGetFramebufferSize(window.getWindow(), &window.getWidthBuffer(), &window.getHeigthBuffer());
 
 	// GLAD INITIALIZER
 	if (!gladLoadGL())
@@ -146,7 +155,7 @@ int main(void)
 	float farPlane = 100.f;
 
 	Mat4 projectionMatrix(1.f);
-	projectionMatrix = perspective(fov, static_cast<float>(frameBufferWidth / frameBufferHeigth), nearPlane, farPlane);
+	projectionMatrix = perspective(fov, static_cast<float>(window.getWidthBuffer() / window.getHeigthBuffer()), nearPlane, farPlane);
 	
 	//LIGHTS
 	Vector3f lightPos0(0.f, 0.f, 1.f);
@@ -157,11 +166,11 @@ int main(void)
 	coreProgram.setVector3f(lightPos0, "lightPosition");
 	coreProgram.setVector3f(camPosition, "cameraPos");
 
-	while(!glfwWindowShouldClose(window))
+	while(!glfwWindowShouldClose(window.getWindow()))
 	{
 		glfwPollEvents();
-		handleInput(window, mesh);
-		updateInput(window);
+		handleInput(window.getWindow(), mesh);
+		updateInput(window.getWindow());
 
 
 		glClearColor(0.13f, 0.25f, 0.5f, 1.0f);
@@ -173,9 +182,9 @@ int main(void)
 		material.sendToShader(coreProgram);
 
 		//Move, Rotate, scale
-		glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeigth);
+		glfwGetFramebufferSize(window.getWindow(), &window.getWidthBuffer(), &window.getHeigthBuffer());
 		projectionMatrix.reset();
-		projectionMatrix = perspective(fov, static_cast<float>(frameBufferWidth) / frameBufferHeigth, nearPlane, farPlane);
+		projectionMatrix = perspective(fov, static_cast<float>(window.getWidthBuffer()) / window.getHeigthBuffer(), nearPlane, farPlane);
 		coreProgram.setMat4(projectionMatrix, "projectionMatrix");
 
 		coreProgram.use();
@@ -184,7 +193,7 @@ int main(void)
 
 		mesh.render(&coreProgram);
 
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(window.getWindow());
 		glFlush();
 
 		glBindVertexArray(0);
@@ -192,7 +201,7 @@ int main(void)
 		texture.unbind();
 	}
 
-	glfwDestroyWindow(window);
+	glfwDestroyWindow(window.getWindow());
 	glfwTerminate();
 	return 0;
 }
