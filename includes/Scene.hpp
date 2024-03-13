@@ -58,6 +58,7 @@ private:
 	void initUniforms();
 
 	static void updateInput(GLFWwindow *window, Mesh &mesh);
+	void updateUniforms();
 };
 
 #endif

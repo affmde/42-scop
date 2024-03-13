@@ -148,15 +148,7 @@ void Scene::render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	//Update Uniforms
-	this->shaders[CORE_PROGRAM]->set1i(this->textures[TEXTURE_ENUM]->getTextureUnit(), "texture0");
-	this->materials[MATERIAL_ENUM]->sendToShader(*this->shaders[CORE_PROGRAM]);
-
-	//Move, Rotate, scale
-	glfwGetFramebufferSize(this->window.getWindow(), &this->window.getWidthBuffer(), &this->window.getHeigthBuffer());
-
-	projectionMatrix.reset();
-	projectionMatrix = perspective(fov, static_cast<float>(window.getWidthBuffer()) / window.getHeigthBuffer(), nearPlane, farPlane);
-	this->shaders[CORE_PROGRAM]->setMat4(projectionMatrix, "projectionMatrix");
+	this->updateUniforms();
 	this->shaders[CORE_PROGRAM]->use();
 
 	//Activate Textures
@@ -169,7 +161,7 @@ void Scene::render()
 
 	glBindVertexArray(0);
 	glUseProgram(0);
-	//texture.unbind();
+	this->textures[TEXTURE_ENUM]->unbind();
 }
 
 void Scene::updateInput(GLFWwindow *window, Mesh &mesh)
@@ -196,4 +188,17 @@ void Scene::updateInput(GLFWwindow *window, Mesh &mesh)
 		mesh.zoom(Vector3f(SPEED));
 	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
 		mesh.zoom(Vector3f(-SPEED));
+}
+
+void Scene::updateUniforms()
+{
+	// this->shaders[CORE_PROGRAM]->set1i(this->textures[TEXTURE_ENUM]->getTextureUnit(), "texture0");
+	this->materials[MATERIAL_ENUM]->sendToShader(*this->shaders[CORE_PROGRAM]);
+
+	//Move, Rotate, scale
+	glfwGetFramebufferSize(this->window.getWindow(), &this->window.getWidthBuffer(), &this->window.getHeigthBuffer());
+
+	projectionMatrix.reset();
+	projectionMatrix = perspective(fov, static_cast<float>(window.getWidthBuffer()) / window.getHeigthBuffer(), nearPlane, farPlane);
+	this->shaders[CORE_PROGRAM]->setMat4(projectionMatrix, "projectionMatrix");
 }
