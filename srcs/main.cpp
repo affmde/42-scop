@@ -11,6 +11,8 @@
 #include "Utils.hpp"
 #include "Material.hpp"
 #include "Mesh.hpp"
+#include "Triangle.hpp"
+#include "Quad.hpp"
 
 #define SPEED 0.05f
 
@@ -32,36 +34,28 @@ void resizeWindow(GLFWwindow *window, int width, int heigth)
 	glViewport(0, 0, width, heigth);
 }
 
-void handleInput(GLFWwindow *window, Vector3f &position, Vector3f &rotation, Vector3f &scale)
+void handleInput(GLFWwindow *window, Mesh &mesh)
 {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		position.z -= SPEED;
+		mesh.move(Vector3f(0.f, 0.f, -SPEED));
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		position.z += SPEED;
+		mesh.move(Vector3f(0.f, 0.f, SPEED));
 	if  (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		position.x -= SPEED;
+		mesh.move(Vector3f(-SPEED, 0.f, 0.f));
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		position.x += SPEED;
+		mesh.move(Vector3f(SPEED, 0.f, 0.f));
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		rotation.y += 1.f;
+		mesh.rotate(Vector3f(0.f, 1.f, 0.f));
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		rotation.y -= 1.f;
+		mesh.rotate(Vector3f(0.f, -1.f, 0.f));
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		rotation.x += 1.f;
+		mesh.rotate(Vector3f(1.f, 0.f, 0.f));
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		rotation.x -= 1.f;
+		mesh.rotate(Vector3f(-1.f, 0.f, 0.f));
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-	{
-		scale.x += SPEED;
-		scale.y += SPEED;
-		scale.z += SPEED;
-	}
+		mesh.zoom(Vector3f(SPEED));
 	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-	{
-		scale.x -= SPEED;
-		scale.y -= SPEED;
-		scale.z -= SPEED;
-	}
+		mesh.zoom(Vector3f(-SPEED));
 }
 
 int main(void)
@@ -117,71 +111,14 @@ int main(void)
 	/*
 	FOR EXEMPLE PURPOSE!!!
 	*/
-	Vertex testVertices[4];
 
-	testVertices[0].position = Vector3f(-0.5f, 0.5f, 0.0f);
-	testVertices[1].position = Vector3f(-0.5f, -0.5f, 0.0f);
-	testVertices[2].position = Vector3f(0.5f, -0.5f, 0.0f);
-
-	testVertices[0].color = Vector3f(1.0f, 0.0f, 0.0f);
-	testVertices[1].color = Vector3f(0.0f, 1.0f, 0.0f);
-	testVertices[2].color = Vector3f(0.0f, 0.0f, 1.0f);
-
-	testVertices[0].texcoord = Vector2f(0.5f, 1.0f);
-	testVertices[1].texcoord = Vector2f(0.0f, 0.0f);
-	testVertices[2].texcoord = Vector2f(1.0f, 0.0f);
-
-
-	testVertices[3].position = Vector3f(0.5f, 0.5f, 0.0f);
-	testVertices[3].color = Vector3f(1.0f, 1.0f, 0.0f);
-	testVertices[3].texcoord = Vector2f(1.0f, 1.0f);
-
-	testVertices[0].normal = Vector3f(0.0f, 0.0f, 1.0f);
-	testVertices[1].normal = Vector3f(0.0f, 0.0f, 1.0f);
-	testVertices[2].normal = Vector3f(0.0f, 0.0f, 1.0f);
-	testVertices[3].normal = Vector3f(0.0f, 0.0f, 1.0f);
-
-	unsigned int nbrOfVertices = sizeof(testVertices) / sizeof(Vertex);
-	GLuint indices[] = { 0, 1, 2, 0, 2, 3};
-	unsigned int nbrOfIndices = sizeof(indices) / sizeof(GLuint);
-
+	Primitive primitive;
 
 	/*************************/
 
-	Mesh mesh(testVertices, nbrOfVertices, indices, nbrOfIndices);
-
-	//VAO -> VERTEX ARRAY OBJECT
-	GLuint VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	//VBO -> Vertex Buffer Object
-	GLuint VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(testVertices), testVertices, GL_STATIC_DRAW);
-
-	//EBO -> Element Buffer Object
-	GLuint EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	Vertex v;
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
-	glEnableVertexAttribArray(2);
-
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));
-	glEnableVertexAttribArray(3);
-
-	glBindVertexArray(0);
-
+	Quad quad;
+	Triangle triangle;
+	Mesh mesh(&triangle);
 
 	//Textures
 	Texture texture;
@@ -223,7 +160,7 @@ int main(void)
 	while(!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
-		handleInput(window, position, rotation, scale);
+		handleInput(window, mesh);
 		updateInput(window);
 
 
@@ -240,31 +177,11 @@ int main(void)
 		projectionMatrix.reset();
 		projectionMatrix = perspective(fov, static_cast<float>(frameBufferWidth) / frameBufferHeigth, nearPlane, farPlane);
 		coreProgram.setMat4(projectionMatrix, "projectionMatrix");
-		
-		model.reset();
-		Mat4 tr = model.translate(position);
-		Mat4 rx = model.rotate(toRadians(rotation.x), Vector3f(1.0f, 0.0f, 0.0f));
-		Mat4 ry = model.rotate(toRadians(rotation.y), Vector3f(0.0f, 1.0f, 0.0f));
-		Mat4 rz = model.rotate(toRadians(rotation.z), Vector3f(0.0f, 0.0f, 1.0f));
-		Mat4 sc = model.scale(scale);
-
-		model *= tr;
-		model *= rx;
-		model *= ry;
-		model *= rz;
-		model *= sc;
-
-		coreProgram.setMat4(model, "model");
 
 		coreProgram.use();
 		//Activate Textures
-
 		texture.bind();
 
-		glBindVertexArray(VAO);
-
-		// //glDrawArrays(GL_TRIANGLES, 0, nbrOfVertices);
-		glDrawElements(GL_TRIANGLES, nbrOfIndices, GL_UNSIGNED_INT, 0);
 		mesh.render(&coreProgram);
 
 		glfwSwapBuffers(window);
@@ -273,7 +190,6 @@ int main(void)
 		glBindVertexArray(0);
 		glUseProgram(0);
 		texture.unbind();
-
 	}
 
 	glfwDestroyWindow(window);
