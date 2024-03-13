@@ -59,11 +59,6 @@ void handleInput(GLFWwindow *window, Mesh &mesh)
 		mesh.zoom(Vector3f(-SPEED));
 }
 
-// GLFWwindow *createWindow(const int width, const int height, int &widthBuffer, int &heigthBuffer, std::string title)
-// {
-
-// }
-
 int main(void)
 {
     if (!glfwInit())
@@ -74,15 +69,7 @@ int main(void)
 	int screenWidth = 800;
 	int screenHeight = 600;
 
-
-	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	// glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	// glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-	// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);   FOR MACOS
-
 	Window window(screenWidth, screenHeight, "42-Scop");
-	// GLFWwindow *window = glfwCreateWindow(screenWidth, screenHeight, "42-Scop", NULL, NULL);
 	if (!window.getWindow())
 	{
 		std::cerr << "Failed to create a window" << std::endl;
@@ -90,10 +77,6 @@ int main(void)
 		return 0;
 	}
 
-	// glfwSetFramebufferSizeCallback(window, resizeWindow);
-	// glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeigth);
-
-	// glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window.getWindow(), resizeWindow);
 	glfwGetFramebufferSize(window.getWindow(), &window.getWidthBuffer(), &window.getHeigthBuffer());
 
@@ -117,14 +100,7 @@ int main(void)
 	//SHADER INIT
 	ShaderLoader coreProgram("srcs/shaders/vertex_core.glsl", "srcs/shaders/fragment_core.glsl");
 
-	/*
-	FOR EXEMPLE PURPOSE!!!
-	*/
-
-	Primitive primitive;
-
-	/*************************/
-
+	// EXAMPLE FOR DISPLAY!!!
 	Quad quad;
 	Triangle triangle;
 	Mesh mesh(&triangle);
@@ -136,10 +112,6 @@ int main(void)
 
 	//Material
 	Material material(Vector3f(0.1f), Vector3f(1.0f), Vector3f(1.f), texture.getTextureUnit(), texture.getTextureUnit());
-
-	Vector3f position;
-	Vector3f rotation;
-	Vector3f scale(1.f);
 
 	Mat4 model(1.f);
 
