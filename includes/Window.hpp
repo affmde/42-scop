@@ -9,13 +9,17 @@
 class Window
 {
 public:
-	Window(const int width, const int heigth, std::string title);
+	Window();
 	~Window();
 	
-	void resizeWindow(GLFWwindow *window, int width, int heigth);
 	GLFWwindow *getWindow();
 	int &getWidthBuffer();
 	int &getHeigthBuffer();
+
+	GLFWwindow *createWindow(const int width, const int heigth, std::string title);
+	void closeWindow();
+
+	bool windowShouldClose() const;
 
 private:
 	GLFWwindow *window;
