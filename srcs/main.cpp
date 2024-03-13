@@ -4,13 +4,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <glm/glm.hpp>
 
 #include "Vertex.hpp"
 #include "ShaderLoader.hpp"
 #include "Texture.hpp"
 #include "Utils.hpp"
 #include "Material.hpp"
+#include "Mesh.hpp"
 
 #define SPEED 0.05f
 
@@ -113,7 +113,6 @@ int main(void)
 
 	//SHADER INIT
 	ShaderLoader coreProgram("srcs/shaders/vertex_core.glsl", "srcs/shaders/fragment_core.glsl");
-	coreProgram.use();
 
 	/*
 	FOR EXEMPLE PURPOSE!!!
@@ -142,12 +141,14 @@ int main(void)
 	testVertices[2].normal = Vector3f(0.0f, 0.0f, 1.0f);
 	testVertices[3].normal = Vector3f(0.0f, 0.0f, 1.0f);
 
-	// unsigned int nbrOfVertices = sizeof(testVertices) / sizeof(Vertex);
+	unsigned int nbrOfVertices = sizeof(testVertices) / sizeof(Vertex);
 	GLuint indices[] = { 0, 1, 2, 0, 2, 3};
 	unsigned int nbrOfIndices = sizeof(indices) / sizeof(GLuint);
 
 
 	/*************************/
+
+	Mesh mesh(testVertices, nbrOfVertices, indices, nbrOfIndices);
 
 	//VAO -> VERTEX ARRAY OBJECT
 	GLuint VAO;
@@ -262,8 +263,9 @@ int main(void)
 
 		glBindVertexArray(VAO);
 
-		//glDrawArrays(GL_TRIANGLES, 0, nbrOfVertices);
+		// //glDrawArrays(GL_TRIANGLES, 0, nbrOfVertices);
 		glDrawElements(GL_TRIANGLES, nbrOfIndices, GL_UNSIGNED_INT, 0);
+		mesh.render(&coreProgram);
 
 		glfwSwapBuffers(window);
 		glFlush();
