@@ -12,6 +12,8 @@
 #include "Utils.hpp"
 #include "Material.hpp"
 
+#define SPEED 0.05f
+
 
 #define STB_IMAGE_IMPLEMENTATION
  #include "stb_images/stb_image.h"
@@ -33,13 +35,13 @@ void resizeWindow(GLFWwindow *window, int width, int heigth)
 void handleInput(GLFWwindow *window, Vector3f &position, Vector3f &rotation, Vector3f &scale)
 {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		position.z -= 0.01f;
+		position.z -= SPEED;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		position.z += 0.01f;
+		position.z += SPEED;
 	if  (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		position.x -= 0.01f;
+		position.x -= SPEED;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		position.x += 0.01f;
+		position.x += SPEED;
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 		rotation.y += 1.f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
@@ -50,15 +52,15 @@ void handleInput(GLFWwindow *window, Vector3f &position, Vector3f &rotation, Vec
 		rotation.x -= 1.f;
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
 	{
-		scale.x += 0.01f;
-		scale.y += 0.01f;
-		scale.z += 0.01f;
+		scale.x += SPEED;
+		scale.y += SPEED;
+		scale.z += SPEED;
 	}
 	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
 	{
-		scale.x -= 0.01f;
-		scale.y -= 0.01f;
-		scale.z -= 0.01f;
+		scale.x -= SPEED;
+		scale.y -= SPEED;
+		scale.z -= SPEED;
 	}
 }
 
@@ -182,11 +184,11 @@ int main(void)
 
 	//Textures
 	Texture texture;
-	texture.loadTexture("Textures/cat_mouse1.png", GL_TEXTURE_2D, 0);
+	texture.loadTexture("Textures/peimariSymbol.png", GL_TEXTURE_2D, 0);
+
 
 	//Material
-	Material material(Vector3f(0.1f), Vector3f(1.0f), Vector3f(0.5f), texture.getTextureUnit(), 1);
-
+	Material material(Vector3f(0.1f), Vector3f(1.0f), Vector3f(1.f), texture.getTextureUnit(), texture.getTextureUnit());
 
 	Vector3f position;
 	Vector3f rotation;
@@ -251,7 +253,6 @@ int main(void)
 		model *= rz;
 		model *= sc;
 
-		// glUniformMatrix4fv(glGetUniformLocation(coreProgram, "model"), 1, GL_FALSE, &model.model[0][0]);
 		coreProgram.setMat4(model, "model");
 
 		coreProgram.use();

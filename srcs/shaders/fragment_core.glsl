@@ -21,29 +21,44 @@ uniform Material material;
 uniform vec3 lightPosition;
 uniform vec3 cameraPos;
 
-void main()
+vec3 calculateAmbient(Material material)
 {
-	//fs_color = vec4(vs_color, 1.f);
+	return material.ambient;
+}
 
-	//Ambient light
-	vec3 ambientLight = material.ambient;
-
-	//Difuse light
+vec3 calculateDiffuse(Material material, vec3 vs_position, vec3 lightPosition, vec3 vs_normal)
+{
 	vec3 posToLightDirVec = normalize(lightPosition - vs_position);
-	vec3 diffuseColor = vec3(1.f, 1.f, 1.f);
 	float diffuse = clamp(dot(posToLightDirVec, vs_normal), 0, 1);
 	vec3 diffuseFinal = material.diffuse * diffuse;
+	return diffuseFinal;
+}
 
-	//Specular light
+vec3 calculateSpecular(Material material, vec3 vs_position, vec3 lightPosition, vec3 vs_normal, vec3 cameraPos)
+{
 	vec3 lightToPosDirVec = normalize(vs_position - lightPosition);
 	vec3 reflectVec = normalize(reflect(lightToPosDirVec , normalize(vs_normal)));
 	vec3 posToViewDirVec = normalize(cameraPos - vs_position);
 	float specularConst = pow(max(dot(posToViewDirVec, reflectVec), 0), 35);
 	vec3 specularFinal = material.specular * specularConst;
+	return specularFinal;
+}
+
+void main()
+{
+	//fs_color = vec4(vs_color, 1.f);
+
+	//Ambient light
+	vec3 ambientFinal = calculateAmbient(material);
+
+	//Difuse light
+	vec3 diffuseFinal = calculateDiffuse(material, vs_position, lightPosition, vs_normal);
+
+	//Specular light
+	vec3 specularFinal = calculateSpecular(material, vs_position, lightPosition, vs_normal, cameraPos);
 
 	//Attenuation
 
 	fs_color = texture(material.diffuseTex, vs_texcoord) * vec4(vs_color, 1.f)
-	* (vec4(ambientLight, 1.f) + vec4(diffuseFinal, 1.f))
-	+ vec4(specularFinal, 1.f);
+	* (vec4(ambientFinal, 1.f) + vec4(diffuseFinal, 1.f) + vec4(specularFinal, 1.f));
 }
