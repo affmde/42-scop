@@ -47,9 +47,21 @@ private:
 	float nearPlane;
 	float farPlane;
 
+	//FOR CAMERA
+	float dt;
+	float currentTime;
+	float lastTime;
+
+	double lastMouseX;
+	double lastMouseY;
+	double mouseX;
+	double mouseY;
+	double mouseOffsetX;
+	double mouseOffsetY;
+	bool firstMouse;
+
 	void initGLFW();
 	void initGlad();
-	void initialize();
 	void openGLSettings();
 	void initMatrices();
 	void initShaders();
@@ -59,8 +71,12 @@ private:
 	void initLights();
 	void initUniforms();
 
-	static void updateInput(GLFWwindow *window, Mesh &mesh);
 	void updateUniforms();
+	void updateDeltaTime();
+
+	void handleInput();
+	void handleKeyboardInputs();
+	void handleMouseInputs();
 };
 
 #endif

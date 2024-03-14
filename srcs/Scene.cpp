@@ -20,6 +20,18 @@ Scene::Scene(int width, int height, std::string title) :
 	this->nearPlane = 0.1f;
 	this->farPlane = 100.f;
 
+	this->dt = 0;
+	this->currentTime = 0;
+	this->lastTime = 0;
+
+	this->lastMouseX = 0;
+	this->lastMouseY = 0;
+	this->mouseX = 0;
+	this->mouseY = 0;
+	this->mouseOffsetX = 0;
+	this->mouseOffsetY = 0;
+	this->firstMouse = true;
+
 	try {
 		this->initGLFW();
 		this->window.createWindow(width, height, title);
@@ -51,8 +63,6 @@ Scene::~Scene()
 		delete light;
 }
 
-void Scene::initialize() {}
-
 void Scene::initGLFW()
 {
 	if (!glfwInit())
@@ -77,6 +87,7 @@ void Scene::openGLSettings()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Scene::initMatrices()
@@ -132,7 +143,6 @@ void Scene::initUniforms()
 	this->shaders[CORE_PROGRAM]->setMat4(this->viewMatrix, "viewMatrix");
 	this->shaders[CORE_PROGRAM]->setMat4(this->projectionMatrix, "projectionMatrix");
 	this->shaders[CORE_PROGRAM]->setVector3f(*this->lights[0], "lightPosition");
-	this->shaders[CORE_PROGRAM]->setVector3f(this->cameraPos, "cameraPos");
 }
 
 void Scene::closeWindow() { this->window.closeWindow(); }
@@ -141,8 +151,8 @@ bool Scene::windowShouldClose() const { return this->window.windowShouldClose();
 
 void Scene::update()
 {
-	glfwPollEvents();
-	this->updateInput(this->window.getWindow(), *this->meshes[MESH_ENUM]);
+	this->updateDeltaTime();
+	this->handleInput();
 }
 
 void Scene::render()
@@ -172,41 +182,72 @@ void Scene::render()
 	this->textures.at("peimariSymbolSpecular")->unbind();
 }
 
-void Scene::updateInput(GLFWwindow *window, Mesh &mesh)
-{
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		mesh.move(Vector3f(0.f, 0.f, -SPEED));
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		mesh.move(Vector3f(0.f, 0.f, SPEED));
-	if  (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		mesh.move(Vector3f(-SPEED, 0.f, 0.f));
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		mesh.move(Vector3f(SPEED, 0.f, 0.f));
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		mesh.rotate(Vector3f(0.f, 1.f, 0.f));
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		mesh.rotate(Vector3f(0.f, -1.f, 0.f));
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		mesh.rotate(Vector3f(1.f, 0.f, 0.f));
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		mesh.rotate(Vector3f(-1.f, 0.f, 0.f));
-	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-		mesh.zoom(Vector3f(SPEED));
-	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-		mesh.zoom(Vector3f(-SPEED));
-}
-
 void Scene::updateUniforms()
-{
-	// this->shaders[CORE_PROGRAM]->set1i(this->textures[TEXTURE_ENUM]->getTextureUnit(), "texture0");
-	
-
+{	
 	//Move, Rotate, scale
+	this->viewMatrix = lookAt(this->cameraPos, this->cameraPos + this->cameraFront, this->worldUp);
+	this->shaders[CORE_PROGRAM]->setMat4(this->viewMatrix, "viewMatrix");
+	this->shaders[CORE_PROGRAM]->setVector3f(this->cameraPos, "cameraPos");
+
 	glfwGetFramebufferSize(this->window.getWindow(), &this->window.getWidthBuffer(), &this->window.getHeigthBuffer());
 
 	projectionMatrix.reset();
-	projectionMatrix = perspective(fov, static_cast<float>(window.getWidthBuffer()) / window.getHeigthBuffer(), nearPlane, farPlane);
+	projectionMatrix = perspective(
+		this->fov,
+		static_cast<float>(this->window.getWidthBuffer()) / this->window.getHeigthBuffer(),
+		this->nearPlane, farPlane);
 	this->shaders[CORE_PROGRAM]->setMat4(projectionMatrix, "projectionMatrix");
+}
+
+void Scene::updateDeltaTime()
+{
+	this->currentTime = static_cast<float>(glfwGetTime());
+	this->dt = this->currentTime - this->lastTime;
+	this->lastTime = this->currentTime;
+}
+
+void Scene::handleInput()
+{
+	glfwPollEvents();
+	
+	this->handleKeyboardInputs();
+	this->handleMouseInputs();
+
+}
+
+void Scene::handleKeyboardInputs()
+{
+	GLFWwindow *window = this->window.getWindow();
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		this->cameraPos.z -= SPEED;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		this->cameraPos.z += SPEED;
+	if  (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		this->cameraPos.x -= SPEED;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		this->cameraPos.x += SPEED;
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+		this->cameraPos.y -= SPEED;
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		this->cameraPos.y += SPEED;
+}
+
+void Scene::handleMouseInputs()
+{
+	glfwGetCursorPos(this->window.getWindow(), &this->mouseX, &this->mouseY);
+
+	if (this->firstMouse)
+	{
+		this->lastMouseX = this->mouseX;
+		this->lastMouseY = this->mouseY;
+		this->firstMouse = false;
+	}
+
+	this->mouseOffsetX = this->mouseX - this->lastMouseX;
+	this->mouseOffsetY = this->lastMouseY - this->mouseY;
+
+	this->lastMouseX = this->mouseX;
+	this->lastMouseY = this->mouseY;
 }
