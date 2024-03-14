@@ -1,6 +1,8 @@
 #ifndef SCENE_HPP
 # define SCENE_HPP
 
+#include <unordered_map>
+
 #include "Window.hpp"
 #include "Texture.hpp"
 #include "Material.hpp"
@@ -28,7 +30,7 @@ private:
 	Window window;
 
 	std::vector<ShaderLoader*> shaders;
-	std::vector<Texture*> textures;
+	std::unordered_map<std::string, Texture*> textures;
 	std::vector<Material*> materials;
 	std::vector<Mesh*> meshes;
 	std::vector<Vector3f*> lights;

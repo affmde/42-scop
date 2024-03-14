@@ -42,7 +42,7 @@ Scene::~Scene()
 	for(auto &shader : this->shaders)
 		delete shader;
 	for(auto &texture : this->textures)
-		delete texture;
+		delete texture.second;
 	for(auto &material : this->materials)
 		delete material;
 	for(auto &mesh : this->meshes)
@@ -99,7 +99,10 @@ void Scene::initTextures()
 {
 	Texture *texture = new Texture();
 	texture->loadTexture("Textures/peimariSymbol.png", GL_TEXTURE_2D, 0);
-	this->textures.push_back(texture);
+	this->textures.insert(std::make_pair("peimariSymbol",texture));
+	Texture *texture2 = new Texture();
+	texture2->loadTexture("Textures/peimariSymbolSpecular.png", GL_TEXTURE_2D, 1);
+	this->textures.insert(std::make_pair("peimariSymbolSpecular", texture2));
 }
 
 void Scene::initMaterials()
@@ -109,8 +112,8 @@ void Scene::initMaterials()
 			Vector3f(0.1f),
 			Vector3f(1.0f),
 			Vector3f(1.f),
-			this->textures[TEXTURE_ENUM]->getTextureUnit(),
-			this->textures[TEXTURE_ENUM]->getTextureUnit()));
+			this->textures.at("peimariSymbol")->getTextureUnit(),
+			this->textures.at("peimariSymbolSpecular")->getTextureUnit()));
 }
 
 void Scene::initMeshes()
@@ -149,10 +152,14 @@ void Scene::render()
 
 	//Update Uniforms
 	this->updateUniforms();
+
+	this->materials[MATERIAL_ENUM]->sendToShader(*this->shaders[CORE_PROGRAM]);
+	
 	this->shaders[CORE_PROGRAM]->use();
 
 	//Activate Textures
-	this->textures[TEXTURE_ENUM]->bind();
+	this->textures.at("peimariSymbol")->bind();
+	this->textures.at("peimariSymbolSpecular")->bind();
 
 	this->meshes[MESH_ENUM]->render(this->shaders[CORE_PROGRAM]);
 
@@ -161,7 +168,8 @@ void Scene::render()
 
 	glBindVertexArray(0);
 	glUseProgram(0);
-	this->textures[TEXTURE_ENUM]->unbind();
+	this->textures.at("peimariSymbol")->unbind();
+	this->textures.at("peimariSymbolSpecular")->unbind();
 }
 
 void Scene::updateInput(GLFWwindow *window, Mesh &mesh)
@@ -193,7 +201,7 @@ void Scene::updateInput(GLFWwindow *window, Mesh &mesh)
 void Scene::updateUniforms()
 {
 	// this->shaders[CORE_PROGRAM]->set1i(this->textures[TEXTURE_ENUM]->getTextureUnit(), "texture0");
-	this->materials[MATERIAL_ENUM]->sendToShader(*this->shaders[CORE_PROGRAM]);
+	
 
 	//Move, Rotate, scale
 	glfwGetFramebufferSize(this->window.getWindow(), &this->window.getWidthBuffer(), &this->window.getHeigthBuffer());
