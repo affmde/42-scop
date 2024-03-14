@@ -4,8 +4,10 @@
 Mesh::Mesh(Vertex *vertexArray,
 		const unsigned int &numberOfVertices,
 		unsigned int* indexArray,
-		const unsigned int &numberOfIndices) : modelMatrix(1.f)
+		const unsigned int &numberOfIndices,
+		Vector3f origin) : modelMatrix(1.f)
 {
+	this->origin = origin;
 	this->numberOfVertices = numberOfVertices;
 	this->numberOfIndices = numberOfIndices;
 	this->vertexArray = new Vertex[this->numberOfVertices];
@@ -19,8 +21,9 @@ Mesh::Mesh(Vertex *vertexArray,
 	this->updateModelMatrix();
 }
 
-Mesh::Mesh(Primitive *primitive) : modelMatrix(1.f)
+Mesh::Mesh(Primitive *primitive, Vector3f origin) : modelMatrix(1.f)
 {
+	this->origin = origin;
 	this->numberOfVertices = primitive->getNumberOfVertices();
 	this->numberOfIndices = primitive->getNumberOfIndices();
 	this->vertexArray = new Vertex[this->numberOfVertices];
@@ -48,6 +51,7 @@ Mesh::~Mesh()
 
 Mesh::Mesh(const Mesh &other) : modelMatrix(1.f)
 {
+	this->origin = other.origin;
 	this->numberOfVertices = other.numberOfVertices;
 	this->numberOfIndices = other.numberOfIndices;
 	this->vertexArray = new Vertex[this->numberOfVertices];
@@ -123,7 +127,7 @@ void Mesh::render(ShaderLoader *shader)
 void Mesh::updateModelMatrix()
 {
 	this->modelMatrix.reset();
-	Mat4 tr = this->modelMatrix.translate(this->position);
+	Mat4 tr = this->modelMatrix.translate(this->position - this->origin);
 	Mat4 rx = this->modelMatrix.rotate(toRadians(this->rotation.x), Vector3f(1.0f, 0.0f, 0.0f));
 	Mat4 ry = this->modelMatrix.rotate(toRadians(this->rotation.y), Vector3f(0.0f, 1.0f, 0.0f));
 	Mat4 rz = this->modelMatrix.rotate(toRadians(this->rotation.z), Vector3f(0.0f, 0.0f, 1.0f));
@@ -136,9 +140,10 @@ void Mesh::updateModelMatrix()
 	this->modelMatrix *= sc;
 }
 
-void Mesh::setPosition(Vector3f position) { this->position = position; }
-void Mesh::setRotation(Vector3f rotation) { this->rotation = rotation; }
-void Mesh::setScale(Vector3f scale) { this->scale = scale; }
-void Mesh::move(Vector3f position) { this->position += position; }
-void Mesh::rotate(Vector3f rotation) { this->rotation += rotation; }
-void Mesh::zoom(Vector3f scale) { this->scale += scale; }
+void Mesh::setPosition(const Vector3f position) { this->position = position; }
+void Mesh::setRotation(const Vector3f rotation) { this->rotation = rotation; }
+void Mesh::setScale(const Vector3f scale) { this->scale = scale; }
+void Mesh::setOrigin(const Vector3f origin) { this->origin = origin; }
+void Mesh::move(const Vector3f position) { this->position += position; }
+void Mesh::rotate(const Vector3f rotation) { this->rotation += rotation; }
+void Mesh::zoom(const Vector3f scale) { this->scale += scale; }

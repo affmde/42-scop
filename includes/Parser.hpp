@@ -20,6 +20,21 @@ public:
 	void printVertices() const;
 
 private:
+	std::vector<Vector3f> verticesPosition;
+	std::vector<Vector2f> verticesTextureCoord;
+	std::vector<Vector3f> verticesNormal;
+
+	std::vector<int> verticesPositionIndices
+	std::vector<int> verticesTexCoordIndices;
+	std::vector<int> verticesNormalIndices;
+
+	std::vector<Vertex> vertices;
+
+
+
+
+
+	//OLD VERSION
 	std::vector<std::string> vertexNormals;
 	std::vector<std::string> vertexTexture;
 	std::vector<std::string> vertices;

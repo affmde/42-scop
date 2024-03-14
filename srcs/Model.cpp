@@ -12,13 +12,13 @@ Model::Model(Vector3f position, Material *material, Texture *texDif, Texture *te
 		Mesh *cpy = new Mesh(*i.second);
 		this->meshes.insert(std::make_pair(i.first, cpy));
 	}
+	for(auto &i : this->meshes)
+	{
+		i.second->move(this->position);
+	}
 }
 
-Model::~Model()
-{
-	for(auto &i : this->meshes)
-		delete i.second;
-}
+Model::~Model() {}
 
 void Model::update()
 {
@@ -33,11 +33,13 @@ void Model::render(ShaderLoader *shader)
 	shader->use();
 
 	//Activate Textures
-	this->overrideTexutureDiffuse->bind();
-	this->overrideTextureSpecular->bind();
 
 	for(auto &mesh : this->meshes)
+	{
+		this->overrideTexutureDiffuse->bind();
+		this->overrideTextureSpecular->bind();
 		mesh.second->render(shader);
+	}
 }
 
 void Model::updateUniforms()

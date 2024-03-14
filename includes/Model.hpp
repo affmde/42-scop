@@ -24,6 +24,8 @@ private:
 	Texture *overrideTexutureDiffuse;
 	Texture *overrideTextureSpecular;
 	std::unordered_map<std::string, Mesh*> meshes;
+
+	Vector3f origin;
 	Vector3f position;
 
 	void updateUniforms();

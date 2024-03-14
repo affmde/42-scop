@@ -126,7 +126,7 @@ void Scene::initMaterials()
 		new Material(
 			Vector3f(0.1f),
 			Vector3f(1.0f),
-			Vector3f(1.f),
+			Vector3f(2.f),
 			this->textures.at("peimariSymbol")->getTextureUnit(),
 			this->textures.at("peimariSymbolSpecular")->getTextureUnit()));
 }
@@ -164,7 +164,7 @@ void Scene::initModels()
 	));
 
 	this->models.push_back(new Model(
-		Vector3f(0.f),
+		Vector3f(0.5f, 0, -0.5f),
 		this->materials[MATERIAL_ENUM],
 		this->textures.at("peimariSymbol"),
 		this->textures.at("peimariSymbolSpecular"),
@@ -195,16 +195,6 @@ void Scene::render()
 
 	//Update Uniforms
 	this->updateUniforms();
-
-	// this->materials[MATERIAL_ENUM]->sendToShader(*this->shaders[CORE_PROGRAM]);
-	
-	// this->shaders[CORE_PROGRAM]->use();
-
-	// //Activate Textures
-	// this->textures.at("peimariSymbol")->bind();
-	// this->textures.at("peimariSymbolSpecular")->bind();
-
-	// this->meshes["pyramid"]->render(this->shaders[CORE_PROGRAM]);
 
 	this->models[0]->render(this->shaders[CORE_PROGRAM]);
 	this->models[1]->render(this->shaders[CORE_PROGRAM]);

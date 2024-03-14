@@ -17,20 +17,22 @@ public:
 	Mesh(Vertex *vertexArray,
 		const unsigned int &numberOfVertices,
 		unsigned int* indexArray,
-		const unsigned int &numberOfIndices);
-	Mesh(Primitive *primitive);
+		const unsigned int &numberOfIndices,
+		Vector3f origin = Vector3f(0.f));
+	Mesh(Primitive *primitive, Vector3f origin = Vector3f(0.f));
 	~Mesh();
 
 	Mesh(const Mesh &other);
 
 	void update();
 	void render(ShaderLoader *shader);
-	void setPosition(Vector3f position);
-	void setRotation(Vector3f rotation);
-	void setScale(Vector3f scale);
-	void move(Vector3f position);
-	void rotate(Vector3f rotation);
-	void zoom(Vector3f scale);
+	void setPosition(const Vector3f position);
+	void setRotation(const Vector3f rotation);
+	void setScale(const Vector3f scale);
+	void setOrigin(const Vector3f origin);
+	void move(const Vector3f position);
+	void rotate(const Vector3f rotation);
+	void zoom(const Vector3f scale);
 
 private:
 	Vertex *vertexArray;
@@ -42,6 +44,7 @@ private:
 	GLuint VBO;
 	GLuint EBO;
 
+	Vector3f origin;
 	Vector3f position;
 	Vector3f rotation;
 	Vector3f scale;
