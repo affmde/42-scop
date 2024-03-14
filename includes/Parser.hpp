@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include "Vector3f.hpp"
 #include "Vector2f.hpp"
@@ -14,8 +15,7 @@ public:
 	Parser();
 	~Parser();
 
-	void readFile(std::string filePath);
-	const std::vector<Vertex *> &getVertices() const;
+	std::vector<Vertex> loadObj(std::string filePath);
 
 	void printVertices() const;
 
@@ -24,33 +24,15 @@ private:
 	std::vector<Vector2f> verticesTextureCoord;
 	std::vector<Vector3f> verticesNormal;
 
-	std::vector<int> verticesPositionIndices
+	std::vector<int> verticesPositionIndices;
 	std::vector<int> verticesTexCoordIndices;
 	std::vector<int> verticesNormalIndices;
 
 	std::vector<Vertex> vertices;
 
+	std::stringstream ss;
 
-
-
-
-	//OLD VERSION
-	std::vector<std::string> vertexNormals;
-	std::vector<std::string> vertexTexture;
-	std::vector<std::string> vertices;
-	std::vector<std::string> faces;
-
-	std::vector<Vector3f> parsedVertices;
-	std::vector<Vector3f> parsedVerticesNormal;
-	std::vector<Vector2f> parsedVerticesTexture;
-
-	std::vector<Vertex *> parsedVertex;
-
-	void parseLine(std::string line);
-	void parseVerticeLine(std::string &line);
-	void parseVerticeNormalLine(std::string &line);
-	void parseVerticeTextureLine(std::string &line);
-	void parseFaceLine(std::string &line);
+	void parseFaceLine(std::stringstream &line);
 };
 
 #endif

@@ -6,118 +6,95 @@
 #include "Vertex.hpp"
 
 Parser::Parser() {}
-Parser::~Parser() 
-{
-	for(auto &f : this->parsedVertex)
-		delete f;
-	this->parsedVertex.clear();
-}
+Parser::~Parser() {}
 
-void Parser::readFile(std::string pathFile)
+std::vector<Vertex> Parser::loadObj(std::string pathFile)
 {
 	std::ifstream file(pathFile);
 	std::string line;
+	std::string prefix = "";
+	Vector3f tempVec3;
+	Vector2f tempVec2;
+	
 	if(file.is_open())
 	{
 		while(std::getline(file, line))
-			parseLine(line);
+		{
+			ss.clear();
+			ss.str(line);
+			ss >> prefix;
+
+			if (prefix == "#") {}
+			else if (prefix == "o") {}
+			else if (prefix == "s") {}
+			else if (prefix == "use_mtl") {}
+			else if (prefix == "v")
+			{
+				ss >> tempVec3.x >> tempVec3.y >> tempVec3.z;
+				verticesPosition.push_back(tempVec3);
+			}
+			else if (prefix == "vt")
+			{
+				ss >> tempVec2.x >> tempVec2.y;
+				verticesTextureCoord.push_back(tempVec2);
+			}
+			else if (prefix == "vn")
+			{
+				ss >> tempVec3.x >> tempVec3.y >> tempVec3.z;
+				verticesNormal.push_back(tempVec3);
+			}
+			else if (prefix == "f")
+			{
+				parseFaceLine(ss);
+			}
+			else {}
+		}
 		file.close();
+		vertices.resize(verticesPositionIndices.size(), Vertex());
+		// std::cout << "VerticesPositionSize: " << verticesPosition.size() << std::endl;
+		// std::cout << "VerticesTextureCoordSize: " << verticesTextureCoord.size() << std::endl;
+		// std::cout << "VerticesNormalSize: " << verticesNormal.size() << std::endl;
+		// std::cout << "VerticesPositionIndicesSize: " << verticesPositionIndices.size() << std::endl;
+		// std::cout << "VerticesTexCoordIndicesSize: " << verticesTexCoordIndices.size() << std::endl;
+		// std::cout << "VerticesNormalIndicesSize: " << verticesNormalIndices.size() << std::endl;
+		for(int i = 0; i < vertices.size(); i++)
+		{
+			if (!verticesPosition.empty())
+				vertices[i].position = verticesPosition[verticesPositionIndices[i] - 1];
+			if (!verticesTextureCoord.empty())
+				vertices[i].texcoord = verticesTextureCoord[verticesTexCoordIndices[i] - 1];
+			if (!verticesNormalIndices.empty())
+				vertices[i].normal = verticesNormal[verticesNormalIndices[i] - 1];
+			vertices[i].color = Vector3f(1.f);
+		}
 	}
-	for(auto &line : this->vertices)
-		this->parseVerticeLine(line);
-	for(auto &line : this->vertexNormals)
-		this->parseVerticeNormalLine(line);
-	for(auto &line : this->vertexTexture)
-		this->parseVerticeTextureLine(line);
-	for(auto &line : this->faces)
-		this->parseFaceLine(line);
+	return vertices;
 }
 
-void Parser::parseLine(std::string line)
+void Parser::parseFaceLine(std::stringstream &ss)
 {
-	std::string indicator = line.substr(0, 2);
-	if (indicator.compare("vt") == 0)
-		this->vertexTexture.push_back(line);
-	else if (indicator.compare("vn") == 0)
-		this->vertexNormals.push_back(line);
-	else if (indicator.compare("v ") == 0)
-		this->vertices.push_back(line);
-	else if (indicator.compare("f ") == 0)
-		this->faces.push_back(line);
-}
+	int temp;
+	int counter = 0;
 
-void Parser::parseVerticeLine(std::string &line)
-{
-	std::vector<std::string> words = str_split(line, " ");
-	if (words.size() != 4)
-		throw std::runtime_error("Invalid vertice found");
-
-	float x = std::stof(words[1]);
-	float y = std::stof(words[2]);
-	float z = std::stof(words[3]);
-	Vector3f v(x, y, z);
-	this->parsedVertices.push_back(v);
-}
-void Parser::parseVerticeNormalLine(std::string &line)
-{
-	std::vector<std::string> words = str_split(line, " ");
-	if (words.size() != 4)
-		throw std::runtime_error("Invalid vertice normal found");
-
-	float x = std::stof(words[1]);
-	float y = std::stof(words[2]);
-	float z = std::stof(words[3]);
-	Vector3f vn(x, y, z);
-	this->parsedVerticesNormal.push_back(vn);
-}
-
-void Parser::parseVerticeTextureLine(std::string &line)
-{
-	std::vector<std::string> words = str_split(line, " ");
-	if (words.size() != 3)
-		throw std::runtime_error("Invalid vertice texture");
-
-	float x = std::stof(words[1]);
-	float y = std::stof(words[2]);
-	Vector2f vt(x, y);
-	this->parsedVerticesTexture.push_back(vt);
-}
-
-void Parser::parseFaceLine(std::string &line)
-{
-	(void)line;
-	// std::vector<std::string> points = str_split(line, " ");
-	
-	// points.erase(points.begin());
-	// std::vector<unsigned int> v, vt, vn;
-
-	// for(unsigned int i = 0; i < points.size(); i++)
-	// {
-	// 	std::vector<std::string> elements = str_split(points[i], "/");
-	// 	for(unsigned int j = 0; j < elements.size(); j++)
-	// 	{
-	// 		int index = j % 3;
-	// 		if (index == 0)
-	// 			v.push_back(std::stoi(elements[j]));
-	// 		else if (index == 1)
-	// 			vt.push_back(std::stoi(elements[j]));
-	// 		else
-	// 			vn.push_back(std::stoi(elements[j]));
-	// 	}
-	// }
-	// Vertex *vertex = new Vertex();
-	// for(auto &vertice : v)
-	// 	vertex->addV(Vector3f(this->parsedVertices[vertice - 1]));
-	// for(auto &vnormal : vn)
-	// 	vertex->addVN(Vector3f(this->parsedVerticesNormal[vnormal - 1]));
-	// for(auto &vtexture : vt)
-	// 	vertex->addVT(Vector2f(this->parsedVerticesTexture[vtexture - 1]));
-	// this->parsedVertex.push_back(vertex);
-}
-
-const std::vector<Vertex *> &Parser::getVertices() const { return this->parsedVertex; }
-void Parser::printVertices() const
-{
-	for(auto &f : this->parsedVertex)
-		std::cout << *f << std::endl;
+	while(ss >> temp)
+	{
+		if (counter == 0)
+			verticesPositionIndices.push_back(temp);
+		else if (counter == 1)
+			verticesTexCoordIndices.push_back(temp);
+		else if (counter == 2)
+			verticesNormalIndices.push_back(temp);
+		if (ss.peek() == '/')
+		{
+			++counter;
+			ss.ignore(1, '/');
+		}
+		else if(ss.peek() == ' ')
+		{
+			++counter;
+			ss.ignore(1, ' ');
+		}
+		if (counter > 2)
+			counter = 0;
+	}
 }

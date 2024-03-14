@@ -8,7 +8,7 @@
 #define SPEED 0.05f
 
 
-Scene::Scene(int width, int height, std::string title) : 
+Scene::Scene(int width, int height, std::string title, std::vector<Vertex> obj) : 
 	viewMatrix(1.f),
 	projectionMatrix(1.f),
 	camera(Vector3f(0, 0, 1.f), Vector3f(0.f, 0.f, 1.f), Vector3f(0.f, 1.f, 0.f))
@@ -34,6 +34,7 @@ Scene::Scene(int width, int height, std::string title) :
 	this->mouseOffsetY = 0;
 	this->firstMouse = true;
 
+	this->obj = obj;
 	try {
 		this->initGLFW();
 		this->window.createWindow(width, height, title);
@@ -145,35 +146,14 @@ void Scene::initUniforms()
 
 void Scene::initModels()
 {
-	std::unordered_map<std::string, Mesh*> meshes;
-	Pyramid pyramid;
-	Mesh *mesh = new Mesh(&pyramid);
-	meshes.insert(std::make_pair("pyramid", mesh));
 	
-
-	Quad quad;
-	Mesh *mesh2 = new Mesh(&quad);
-	meshes.insert(std::make_pair("quad", mesh2));
-
 	this->models.push_back(new Model(
-		Vector3f(0.f),
+		Vector3f(0.0f, 0.f, 0.0f),
 		this->materials[MATERIAL_ENUM],
 		this->textures.at("peimariSymbol"),
 		this->textures.at("peimariSymbolSpecular"),
-		meshes
+		"Models/andre.obj"
 	));
-
-	this->models.push_back(new Model(
-		Vector3f(0.5f, 0, -0.5f),
-		this->materials[MATERIAL_ENUM],
-		this->textures.at("peimariSymbol"),
-		this->textures.at("peimariSymbolSpecular"),
-		meshes
-	));
-
-	for(auto &mesh : meshes)
-		delete mesh.second;
-	meshes.clear();
 }
 
 void Scene::closeWindow() { this->window.closeWindow(); }
@@ -196,8 +176,8 @@ void Scene::render()
 	//Update Uniforms
 	this->updateUniforms();
 
-	this->models[0]->render(this->shaders[CORE_PROGRAM]);
-	this->models[1]->render(this->shaders[CORE_PROGRAM]);
+	for(auto &model : this->models)
+		model->render(this->shaders[CORE_PROGRAM]);
 
 	glfwSwapBuffers(window.getWindow());
 	glFlush();
