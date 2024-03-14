@@ -21,6 +21,8 @@ public:
 	Mesh(Primitive *primitive);
 	~Mesh();
 
+	Mesh(const Mesh &other);
+
 	void update();
 	void render(ShaderLoader *shader);
 	void setPosition(Vector3f position);
@@ -31,6 +33,8 @@ public:
 	void zoom(Vector3f scale);
 
 private:
+	Vertex *vertexArray;
+	unsigned int *indexArray;
 	unsigned int numberOfVertices;
 	unsigned int numberOfIndices;
 
@@ -43,11 +47,7 @@ private:
 	Vector3f scale;
 	Mat4 modelMatrix;
 
-	void initVAO(Primitive *primitive);
-	void initVAO(Vertex *vertexArray,
-		const unsigned int &numberOfVertices,
-		unsigned int* indexArray,
-		const unsigned int &numberOfIndices);
+	void initVAO();
 	void updateUniformShader(ShaderLoader *shader);
 	void updateModelMatrix();
 };

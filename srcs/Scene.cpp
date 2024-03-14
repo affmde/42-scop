@@ -3,6 +3,7 @@
 #include "Scene.hpp"
 #include "Utils.hpp"
 #include "Pyramid.hpp"
+#include "Quad.hpp"
 
 #define SPEED 0.05f
 
@@ -42,7 +43,7 @@ Scene::Scene(int width, int height, std::string title) :
 		this->initShaders();
 		this->initTextures();
 		this->initMaterials();
-		this->initMeshes();
+		this->initModels();
 		this->initLights();
 		this->initUniforms();
 	} catch (std::string &e) {
@@ -51,17 +52,17 @@ Scene::Scene(int width, int height, std::string title) :
 }
 Scene::~Scene()
 {
-	glfwTerminate();
 	for(auto &shader : this->shaders)
 		delete shader;
 	for(auto &texture : this->textures)
 		delete texture.second;
 	for(auto &material : this->materials)
 		delete material;
-	for(auto &mesh : this->meshes)
-		delete mesh;
 	for(auto &light : this->lights)
 		delete light;
+	for(auto &model : this->models)
+		delete model;
+	glfwTerminate();
 }
 
 void Scene::initGLFW()
@@ -130,12 +131,6 @@ void Scene::initMaterials()
 			this->textures.at("peimariSymbolSpecular")->getTextureUnit()));
 }
 
-void Scene::initMeshes()
-{
-	Pyramid pyramid;
-	this->meshes.push_back(new Mesh(&pyramid));
-}
-
 void Scene::initLights()
 {
 	this->lights.push_back(new Vector3f(0.f, 0.f, 1.f));
@@ -148,6 +143,39 @@ void Scene::initUniforms()
 	this->shaders[CORE_PROGRAM]->setVector3f(*this->lights[0], "lightPosition");
 }
 
+void Scene::initModels()
+{
+	std::unordered_map<std::string, Mesh*> meshes;
+	Pyramid pyramid;
+	Mesh *mesh = new Mesh(&pyramid);
+	meshes.insert(std::make_pair("pyramid", mesh));
+	
+
+	Quad quad;
+	Mesh *mesh2 = new Mesh(&quad);
+	meshes.insert(std::make_pair("quad", mesh2));
+
+	this->models.push_back(new Model(
+		Vector3f(0.f),
+		this->materials[MATERIAL_ENUM],
+		this->textures.at("peimariSymbol"),
+		this->textures.at("peimariSymbolSpecular"),
+		meshes
+	));
+
+	this->models.push_back(new Model(
+		Vector3f(0.f),
+		this->materials[MATERIAL_ENUM],
+		this->textures.at("peimariSymbol"),
+		this->textures.at("peimariSymbolSpecular"),
+		meshes
+	));
+
+	for(auto &mesh : meshes)
+		delete mesh.second;
+	meshes.clear();
+}
+
 void Scene::closeWindow() { this->window.closeWindow(); }
 
 bool Scene::windowShouldClose() const { return this->window.windowShouldClose(); }
@@ -156,9 +184,8 @@ void Scene::update()
 {
 	this->updateDeltaTime();
 	this->handleInput();
-	//this->camera.handleInput(this->dt, -1, this->mouseOffsetX, this->mouseOffsetY);
-
-	// this->meshes[MESH_ENUM]->rotate(Vector3f(0.f, 1.f, 0.f));
+	for(auto &model : this->models)
+		model->rotate(Vector3f(0.f, 1.f, 0.f));
 }
 
 void Scene::render()
@@ -169,15 +196,18 @@ void Scene::render()
 	//Update Uniforms
 	this->updateUniforms();
 
-	this->materials[MATERIAL_ENUM]->sendToShader(*this->shaders[CORE_PROGRAM]);
+	// this->materials[MATERIAL_ENUM]->sendToShader(*this->shaders[CORE_PROGRAM]);
 	
-	this->shaders[CORE_PROGRAM]->use();
+	// this->shaders[CORE_PROGRAM]->use();
 
-	//Activate Textures
-	this->textures.at("peimariSymbol")->bind();
-	this->textures.at("peimariSymbolSpecular")->bind();
+	// //Activate Textures
+	// this->textures.at("peimariSymbol")->bind();
+	// this->textures.at("peimariSymbolSpecular")->bind();
 
-	this->meshes[MESH_ENUM]->render(this->shaders[CORE_PROGRAM]);
+	// this->meshes["pyramid"]->render(this->shaders[CORE_PROGRAM]);
+
+	this->models[0]->render(this->shaders[CORE_PROGRAM]);
+	this->models[1]->render(this->shaders[CORE_PROGRAM]);
 
 	glfwSwapBuffers(window.getWindow());
 	glFlush();

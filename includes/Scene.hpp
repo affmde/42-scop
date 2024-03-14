@@ -8,6 +8,7 @@
 #include "Material.hpp"
 #include "Mesh.hpp"
 #include "Camera.hpp"
+#include "Model.hpp"
 
 enum shader_enum { CORE_PROGRAM = 0 };
 enum texture_enum { TEXTURE_ENUM = 0 };
@@ -33,8 +34,8 @@ private:
 	std::vector<ShaderLoader*> shaders;
 	std::unordered_map<std::string, Texture*> textures;
 	std::vector<Material*> materials;
-	std::vector<Mesh*> meshes;
 	std::vector<Vector3f*> lights;
+	std::vector<Model*> models;
 
 	Mat4 viewMatrix;
 	Mat4 projectionMatrix;
@@ -69,7 +70,7 @@ private:
 	void initShaders();
 	void initTextures();
 	void initMaterials();
-	void initMeshes();
+	void initModels();
 	void initLights();
 	void initUniforms();
 
