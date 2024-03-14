@@ -9,7 +9,8 @@
 
 Scene::Scene(int width, int height, std::string title) : 
 	viewMatrix(1.f),
-	projectionMatrix(1.f)
+	projectionMatrix(1.f),
+	camera(Vector3f(0, 0, 1.f), Vector3f(0.f, 0.f, 1.f), Vector3f(0.f, 1.f, 0.f))
 {
 	this->cameraPos = Vector3f(0.f, 0.f, 1.f);
 	this->worldUp =  Vector3f(0.f, 1.f, 0.f);
@@ -87,7 +88,9 @@ void Scene::openGLSettings()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	GLFWwindow *window = this->window.getWindow();
+	//TODO: REMEMBER TO UNCOMMENT THE NEXT LINE IN MAC!!!!!!!!!!
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Scene::initMatrices()
@@ -153,6 +156,9 @@ void Scene::update()
 {
 	this->updateDeltaTime();
 	this->handleInput();
+	//this->camera.handleInput(this->dt, -1, this->mouseOffsetX, this->mouseOffsetY);
+
+	// this->meshes[MESH_ENUM]->rotate(Vector3f(0.f, 1.f, 0.f));
 }
 
 void Scene::render()
@@ -185,9 +191,9 @@ void Scene::render()
 void Scene::updateUniforms()
 {	
 	//Move, Rotate, scale
-	this->viewMatrix = lookAt(this->cameraPos, this->cameraPos + this->cameraFront, this->worldUp);
+	this->viewMatrix = this->camera.getViewMatrix();
 	this->shaders[CORE_PROGRAM]->setMat4(this->viewMatrix, "viewMatrix");
-	this->shaders[CORE_PROGRAM]->setVector3f(this->cameraPos, "cameraPos");
+	this->shaders[CORE_PROGRAM]->setVector3f(this->camera.getPosition(), "cameraPos");
 
 	glfwGetFramebufferSize(this->window.getWindow(), &this->window.getWidthBuffer(), &this->window.getHeigthBuffer());
 
@@ -212,7 +218,7 @@ void Scene::handleInput()
 	
 	this->handleKeyboardInputs();
 	this->handleMouseInputs();
-
+	this->camera.handleInput(this->dt, -1, this->mouseOffsetX, this->mouseOffsetY);
 }
 
 void Scene::handleKeyboardInputs()
@@ -221,13 +227,13 @@ void Scene::handleKeyboardInputs()
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		this->cameraPos.z -= SPEED;
+		this->camera.move(this->dt, direction_enum::FORWARD);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		this->cameraPos.z += SPEED;
+		this->camera.move(dt, direction_enum::BACKWARD);
 	if  (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		this->cameraPos.x -= SPEED;
+		this->camera.move(dt, direction_enum::LEFT);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		this->cameraPos.x += SPEED;
+		this->camera.move(dt, direction_enum::RIGHT);
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
 		this->cameraPos.y -= SPEED;
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
@@ -237,7 +243,6 @@ void Scene::handleKeyboardInputs()
 void Scene::handleMouseInputs()
 {
 	glfwGetCursorPos(this->window.getWindow(), &this->mouseX, &this->mouseY);
-
 	if (this->firstMouse)
 	{
 		this->lastMouseX = this->mouseX;

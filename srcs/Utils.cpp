@@ -26,10 +26,6 @@ float dot(const Vector3f &a, const Vector3f &b)
 
 Mat4 lookAt(const Vector3f &camPosition, const Vector3f &targetPosition, Vector3f worldUp)
 {
-	// Vector3f forward = (targetPosition - camPosition).normalize();
-	// Vector3f rigth = (worldUp.cross(forward)).normalize();
-	// Vector3f up = forward.cross(rigth);
-
 	Vector3f forward = normalize(camPosition - targetPosition);
 	Vector3f rigth = normalize(cross(worldUp, forward));
 	Vector3f up = cross(forward, rigth);

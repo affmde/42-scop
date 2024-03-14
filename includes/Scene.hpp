@@ -7,6 +7,7 @@
 #include "Texture.hpp"
 #include "Material.hpp"
 #include "Mesh.hpp"
+#include "Camera.hpp"
 
 enum shader_enum { CORE_PROGRAM = 0 };
 enum texture_enum { TEXTURE_ENUM = 0 };
@@ -48,6 +49,7 @@ private:
 	float farPlane;
 
 	//FOR CAMERA
+	Camera camera;
 	float dt;
 	float currentTime;
 	float lastTime;

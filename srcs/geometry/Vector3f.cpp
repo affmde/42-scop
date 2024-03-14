@@ -42,6 +42,11 @@ Vector3f operator-=(const Vector3f &lhs, const Vector3f &rhs)
 	return (Vector3f(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z));
 }
 
+Vector3f operator*(const Vector3f &vec, const float &f)
+{
+	return (Vector3f(vec.x * f, vec.y * f, vec.z * f));
+}
+
 std::ostream &operator<<(std::ostream &os, const Vector3f &vec)
 {
 	return os << "x: " << vec.x << " y: " << vec.y << " z: " << vec.z;
