@@ -24,7 +24,7 @@ DISPLAY_DIR = srcs/display/
 GLAD_DIR = libraries/glad/src/
 
 CORE = main.cpp Parser.cpp Checker.cpp Utils.cpp ShaderLoader.cpp Texture.cpp Material.cpp Mesh.cpp Window.cpp Scene.cpp
-GEOMETRY = Vector3f.cpp Vector2f.cpp Vertex.cpp Mat4.cpp Primitives.cpp Quad.cpp Triangle.cpp
+GEOMETRY = Vector3f.cpp Vector2f.cpp Vertex.cpp Mat4.cpp Primitives.cpp Quad.cpp Triangle.cpp Pyramid.cpp
 DISPLAY = Display.cpp
 GLAD = glad.c
 

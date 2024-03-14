@@ -2,7 +2,7 @@
 
 #include "Scene.hpp"
 #include "Utils.hpp"
-#include "Quad.hpp"
+#include "Pyramid.hpp"
 
 #define SPEED 0.05f
 
@@ -118,8 +118,8 @@ void Scene::initMaterials()
 
 void Scene::initMeshes()
 {
-	Quad quad;
-	this->meshes.push_back(new Mesh(&quad));
+	Pyramid pyramid;
+	this->meshes.push_back(new Mesh(&pyramid));
 }
 
 void Scene::initLights()

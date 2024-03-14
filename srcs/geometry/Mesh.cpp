@@ -20,7 +20,8 @@ Mesh::~Mesh()
 {
 	glDeleteVertexArrays(1, &this->VAO);
 	glDeleteBuffers(1, &this->VBO);
-	glDeleteBuffers(1, &this->EBO);
+	if (this->numberOfIndices > 0)
+		glDeleteBuffers(1, &this->EBO);
 }
 
 void Mesh::initVAO(Primitive *primitive)
@@ -38,9 +39,12 @@ void Mesh::initVAO(Primitive *primitive)
 	glBufferData(GL_ARRAY_BUFFER, primitive->getNumberOfVertices() * sizeof(Vertex), primitive->getVertices(), GL_STATIC_DRAW);
 
 	//EBO -> Element Buffer Object
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, primitive->getNumberOfIndices() * sizeof(GLuint), primitive->getIndices(), GL_STATIC_DRAW);
+	if (this->numberOfIndices > 0)
+	{
+		glGenBuffers(1, &EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, primitive->getNumberOfIndices() * sizeof(GLuint), primitive->getIndices(), GL_STATIC_DRAW);
+	}
 
 	Vertex v;
 
@@ -79,9 +83,12 @@ void Mesh::initVAO(
 	glBufferData(GL_ARRAY_BUFFER, this->numberOfVertices * sizeof(Vertex), vertexArray, GL_STATIC_DRAW);
 
 	//EBO -> Element Buffer Object
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->numberOfIndices* sizeof(GLuint), indexArray, GL_STATIC_DRAW);
+	if (this->numberOfIndices > 0)
+	{
+		glGenBuffers(1, &EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->numberOfIndices* sizeof(GLuint), indexArray, GL_STATIC_DRAW);
+	}
 
 	Vertex v;
 
