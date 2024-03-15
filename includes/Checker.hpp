@@ -6,7 +6,7 @@
 class Checker
 {
 public:
-	Checker(std::string objFile, std::string textureFile);
+	Checker(std::string objFile, std::string textureFile = "");
 	~Checker() {}
 
 	bool getIsFileValid() const;

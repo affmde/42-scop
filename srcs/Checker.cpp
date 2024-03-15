@@ -15,7 +15,7 @@ void Checker::check()
 {
 	this->checkExtension();
 	this->canOpenFile(this->objFile);
-	this->canOpenFile(this->textureFile);
+	//this->canOpenFile(this->textureFile);
 };
 
 void Checker::fileHasCorrectExtension(std::string expected, std::string actual) const
@@ -23,16 +23,16 @@ void Checker::fileHasCorrectExtension(std::string expected, std::string actual) 
 	size_t dotIndex = actual.find_last_of(".");
 	std::string actualExtension;
 	if (dotIndex == std::string::npos)
-		throw std::runtime_error(actual + " has worng extension");
+		throw std::runtime_error(actual + " has wrong extension");
 	actualExtension = actual.substr(dotIndex);
 	if (!expected.compare(actualExtension) == 0)
-		throw std::runtime_error(actual + " has worng extension");
+		throw std::runtime_error(actual + " has wrong extension");
 }
 
 void Checker::checkExtension() const
 {
 	this->fileHasCorrectExtension(".obj", this->objFile);
-	this->fileHasCorrectExtension(".mtl", this->textureFile);
+	//this->fileHasCorrectExtension(".mtl", this->textureFile);
 }
 
 void Checker::canOpenFile(std::string fileName)

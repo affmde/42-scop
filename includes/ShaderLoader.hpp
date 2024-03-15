@@ -21,6 +21,7 @@ public:
 	void setVector2f(Vector2f vec, const GLchar *name);
 	void setVector3f(Vector3f vec, const GLchar *name);
 	void setMat4(Mat4 matrix, const char* name, bool transpose = GL_FALSE);
+	void setFloat(float value, const GLchar *name);
 
 private:
 	unsigned int program;

@@ -9,12 +9,13 @@
 #include "Mesh.hpp"
 #include "Camera.hpp"
 #include "Model.hpp"
+#include "Parser.hpp"
 
 enum shader_enum { CORE_PROGRAM = 0 };
 enum texture_enum { TEXTURE_ENUM = 0 };
 enum material_enum { MATERIAL_ENUM = 0 };
 enum mesh_enum { MESH_ENUM = 0 };
-
+enum class DrawMode { LINES = 0, TEXTURE = 1, COLOR = 2 };
 
 class Scene
 {
@@ -30,6 +31,10 @@ public:
 
 private:
 	Window window;
+
+	Parser parser;
+	std::vector<Vertex> parsedObj;
+	DrawMode drawMode;
 
 	std::vector<ShaderLoader*> shaders;
 	std::unordered_map<std::string, Texture*> textures;
@@ -65,6 +70,14 @@ private:
 	double mouseOffsetX;
 	double mouseOffsetY;
 	bool firstMouse;
+
+	float fadeFactor;
+	bool isFading = false;
+	bool isFadeIn = true;
+	bool isFadeOut = false;
+	void fade();
+	void fadeIn();
+	void fadeOut();
 
 	void initGLFW();
 	void initGlad();

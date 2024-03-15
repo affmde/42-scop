@@ -13,6 +13,7 @@ Scene::Scene(int width, int height, std::string title, std::string filePath) :
 	camera(Vector3f(0, 0, 3.f), Vector3f(0.f, 0.f, 1.f), Vector3f(0.f, 1.f, 0.f))
 {
 	this->filePath = filePath;
+	this->drawMode = DrawMode::LINES;
 	this->cameraPos = Vector3f(0.f, 0.f, 1.f);
 	this->worldUp =  Vector3f(0.f, 1.f, 0.f);
 	this->cameraFront = Vector3f(0.f, 0.f, -1.f);
@@ -34,7 +35,10 @@ Scene::Scene(int width, int height, std::string title, std::string filePath) :
 	this->mouseOffsetY = 0;
 	this->firstMouse = true;
 
+	this->fadeFactor = 1.f;
+
 	try {
+		this->parsedObj = parser.loadObj(this->filePath);
 		this->initGLFW();
 		this->window.createWindow(width, height, title);
 		this->initGlad();
@@ -46,8 +50,9 @@ Scene::Scene(int width, int height, std::string title, std::string filePath) :
 		this->initModels();
 		this->initLights();
 		this->initUniforms();
-	} catch (std::string &e) {
-		std::cerr << e << std::endl;
+
+	} catch (std::exception &e) {
+		throw std::runtime_error(e.what());
 	}
 }
 Scene::~Scene()
@@ -138,6 +143,7 @@ void Scene::initLights()
 
 void Scene::initUniforms()
 {
+	this->shaders[CORE_PROGRAM]->setFloat(this->fadeFactor, "fadeFactor");
 	this->shaders[CORE_PROGRAM]->setMat4(this->viewMatrix, "viewMatrix");
 	this->shaders[CORE_PROGRAM]->setMat4(this->projectionMatrix, "projectionMatrix");
 	this->shaders[CORE_PROGRAM]->setVector3f(*this->lights[0], "lightPosition");
@@ -145,13 +151,21 @@ void Scene::initUniforms()
 
 void Scene::initModels()
 {
-	
+	Mesh *mesh = new Mesh(
+		this->parsedObj.data(),
+		this->parsedObj.size(),
+		NULL,
+		0,
+		Vector3f(0, 0.5f, 0)
+	);
 	this->models.push_back(new Model(
 		Vector3f(0.0f, 0.f, -1.f),
 		this->materials[MATERIAL_ENUM],
 		this->textures.at("peimariSymbol"),
 		this->textures.at("peimariSymbolSpecular"),
-		this->filePath
+		std::unordered_map<std::string, Mesh*>{
+			{"parsedObj", mesh}
+		}
 	));
 }
 
@@ -187,6 +201,14 @@ void Scene::render()
 
 void Scene::updateUniforms()
 {	
+	if (this->isFading)
+	{
+		if (this->isFadeIn)
+			this->fadeOut();
+		else if (this->isFadeOut)
+			this->fadeIn();
+	}
+	this->shaders[CORE_PROGRAM]->setFloat(this->fadeFactor, "fadeFactor");
 	//Move, Rotate, scale
 	this->viewMatrix = this->camera.getViewMatrix();
 	this->shaders[CORE_PROGRAM]->setMat4(this->viewMatrix, "viewMatrix");
@@ -247,6 +269,20 @@ void Scene::handleKeyboardInputs()
 		this->camera.rotate(direction_enum::FORWARD);
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		this->camera.rotate(direction_enum::BACKWARD);
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		this->fade();
+		// if (this->drawMode == DrawMode::LINES)
+		// {
+		// 	this->drawMode = DrawMode::TEXTURE;
+		// 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		// }
+		// else
+		// {
+		// 	this->drawMode = DrawMode::LINES;
+		// 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		// }
+	}
 }
 
 void Scene::handleMouseInputs()
@@ -273,4 +309,36 @@ void Scene::zoom(float value)
 		this->fov = this->maxFOV;
 	else if (this->fov <= this->minFOV)
 		this->fov = this->minFOV;
+}
+
+void Scene::fade()
+{
+	this->isFading = true;
+}
+void Scene::fadeIn()
+{
+	if(this->fadeFactor < 1.f)
+		this->fadeFactor += 0.1f;
+	if (this->fadeFactor >= 1.f)
+	{
+		this->fadeFactor = 1.f;
+		this->isFading = false;
+		this->isFadeIn = true;
+		this->isFadeOut = false;
+	}
+}
+
+void Scene::fadeOut()
+{
+	if(this->fadeFactor > 0.f)
+	{
+		this->fadeFactor -= 0.1f;
+	}
+	if (this->fadeFactor <= 0.f)
+	{
+		this->fadeFactor = 0.f;
+		this->isFading = false;
+		this->isFadeOut = true;
+		this->isFadeIn = false;
+	}
 }

@@ -24,7 +24,6 @@ public:
 
 	Mesh(const Mesh &other);
 
-	void update();
 	void render(ShaderLoader *shader);
 	void setPosition(const Vector3f position);
 	void setRotation(const Vector3f rotation);

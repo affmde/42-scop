@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "Scene.hpp"
-#include "Parser.hpp"
+#include "Checker.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
  #include "stb_images/stb_image.h"
@@ -20,6 +20,8 @@ int main(int argc, char **argv)
 	}
 	try
 	{
+		Checker checker(argv[1]);
+		checker.check();
 		Scene scene(800, 600, "42-Scop", argv[1]);
 		while(!scene.windowShouldClose())
 		{

@@ -1,8 +1,6 @@
 #include "Model.hpp"
 #include "Parser.hpp"
 
-#include <iostream> //DELETE THIS!!!!!!
-
 Model::Model(Vector3f position, Material *material, Texture *texDif, Texture *texSpe, std::unordered_map<std::string, Mesh*> meshes)
 {
 	this->position = position;
@@ -39,17 +37,13 @@ Model::Model(Vector3f position, Material *material, Texture *texDif, Texture *te
 	);
 	this->meshes.insert(std::make_pair(filePath, m));
 	for(auto &i : this->meshes)
-	{
 		i.second->move(this->position);
-	}
 }
 
 Model::~Model()
 {
 	for(auto &i : this->meshes)
-	{
 		delete i.second;
-	}
 }
 
 void Model::update()
@@ -58,8 +52,6 @@ void Model::update()
 
 void Model::render(ShaderLoader *shader)
 {
-	this->updateUniforms();
-
 	this->material->sendToShader(*shader);
 	
 	shader->use();
@@ -72,11 +64,6 @@ void Model::render(ShaderLoader *shader)
 		this->overrideTextureSpecular->bind();
 		mesh.second->render(shader);
 	}
-}
-
-void Model::updateUniforms()
-{
-
 }
 
 void Model::rotate(const Vector3f rotation)

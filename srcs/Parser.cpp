@@ -1,10 +1,14 @@
 #include <fstream>
+#include <time.h>
 
 #include "Parser.hpp"
 #include "Utils.hpp"
 #include "Vertex.hpp"
 
-Parser::Parser() {}
+Parser::Parser() 
+{
+	std::srand(time(NULL));
+}
 Parser::~Parser() {}
 
 std::vector<Vertex> Parser::loadObj(std::string pathFile)
@@ -14,7 +18,7 @@ std::vector<Vertex> Parser::loadObj(std::string pathFile)
 	std::string prefix = "";
 	Vector3f tempVec3;
 	Vector2f tempVec2;
-	
+
 	if(file.is_open())
 	{
 		while(std::getline(file, line))
@@ -58,9 +62,11 @@ std::vector<Vertex> Parser::loadObj(std::string pathFile)
 				vertices[i].texcoord = verticesTextureCoord[verticesTexCoordIndices[i] - 1];
 			if (!verticesNormalIndices.empty())
 				vertices[i].normal = verticesNormal[verticesNormalIndices[i] - 1];
-			vertices[i].color = Vector3f(1.f);
+			vertices[i].color = getRandomColor();
 		}
 	}
+	else
+		throw std::runtime_error("Error: Could not open file " + pathFile);
 	return vertices;
 }
 

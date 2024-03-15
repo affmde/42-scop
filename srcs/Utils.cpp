@@ -1,4 +1,5 @@
 #include <cmath>
+#include <random>
 
 #include "Utils.hpp"
 
@@ -80,4 +81,18 @@ Vector3f cross(const Vector3f &a, const Vector3f &b)
 	return Vector3f(a.y * b.z - a.z * b.y,
 					a.z * b.x - a.x * b.z,
 					a.x * b.y - a.y * b.x);
+}
+
+Vector3f getRandomColor()
+{
+	std::random_device rd;
+    std::mt19937 gen(rd());
+	std::uniform_real_distribution<double> dis(0.0, 1.0);
+
+	Vector3f color;
+
+	color.x = static_cast<float>(dis(gen));
+	color.y = static_cast<float>(dis(gen));
+	color.z = static_cast<float>(dis(gen));
+	return color;
 }

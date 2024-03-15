@@ -21,6 +21,9 @@ uniform Material material;
 uniform vec3 lightPosition;
 uniform vec3 cameraPos;
 
+uniform float fadeFactor;
+uniform int showTexture;
+
 vec3 calculateAmbient(Material material)
 {
 	return material.ambient;
@@ -59,6 +62,10 @@ void main()
 
 	//Attenuation
 
-	fs_color = texture(material.diffuseTex, vs_texcoord) * vec4(vs_color, 1.f)
+	vec4 calculatedColor = texture(material.diffuseTex, vs_texcoord)
 	* (vec4(ambientFinal, 1.f) + vec4(diffuseFinal, 1.f) + vec4(specularFinal, 1.f));
+
+	vec4 colorsDisplay = vec4(vs_color, 1.f) * fadeFactor;
+	vec4 texturesDisplay = fadeFactor == 0.f ? calculatedColor : calculatedColor * (1.f - fadeFactor);
+	fs_color = colorsDisplay + texturesDisplay;
 }

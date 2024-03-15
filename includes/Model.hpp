@@ -28,8 +28,6 @@ private:
 
 	Vector3f origin;
 	Vector3f position;
-
-	void updateUniforms();
 };
 
 #endif
