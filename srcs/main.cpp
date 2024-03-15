@@ -13,11 +13,9 @@
 
 int main(void)
 {
-	Parser parser;
 	try
 	{
-		std::vector<Vertex> vertices = parser.loadObj("Models/andre.obj");
-		Scene scene(800, 600, "42-Scop", vertices);
+		Scene scene(800, 600, "42-Scop");
 		while(!scene.windowShouldClose())
 		{
 			scene.update();

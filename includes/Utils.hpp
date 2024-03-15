@@ -12,7 +12,7 @@ float toRadians(int deg);
 float dot(const Vector3f &a, const Vector3f &b);
 Mat4 lookAt(const Vector3f &camPosition, const Vector3f &targetPosition, Vector3f worldUp);
 Mat4 perspective(float fov, float aspect, float near, float far);
-Vector3f cross(Vector3f &a, Vector3f &b);
+Vector3f cross(const Vector3f &a, const Vector3f &b);
 Vector3f normalize(const Vector3f &a);
 
 #endif

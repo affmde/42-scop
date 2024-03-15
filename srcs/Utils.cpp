@@ -75,7 +75,7 @@ Vector3f normalize(const Vector3f &a)
     }
 }
 
-Vector3f cross(Vector3f &a, Vector3f &b)
+Vector3f cross(const Vector3f &a, const Vector3f &b)
 {
 	return Vector3f(a.y * b.z - a.z * b.y,
 					a.z * b.x - a.x * b.z,

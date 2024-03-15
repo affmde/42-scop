@@ -19,7 +19,7 @@ enum mesh_enum { MESH_ENUM = 0 };
 class Scene
 {
 public:
-	Scene(int width, int height, std::string title, std::vector<Vertex> obj);
+	Scene(int width, int height, std::string title);
 	~Scene();
 
 	void update();
@@ -36,7 +36,6 @@ private:
 	std::vector<Material*> materials;
 	std::vector<Vector3f*> lights;
 	std::vector<Model*> models;
-	std::vector<Vertex> obj;
 
 	Mat4 viewMatrix;
 	Mat4 projectionMatrix;
@@ -47,6 +46,8 @@ private:
 	Vector3f lightPosition;
 
 	float fov;
+	const float maxFOV = 60.f;
+	const float minFOV = 1.f;
 	float nearPlane;
 	float farPlane;
 
@@ -81,6 +82,7 @@ private:
 	void handleInput();
 	void handleKeyboardInputs();
 	void handleMouseInputs();
+	void zoom(float value);
 };
 
 #endif

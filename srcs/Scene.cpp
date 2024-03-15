@@ -7,18 +7,17 @@
 
 #define SPEED 0.05f
 
-
-Scene::Scene(int width, int height, std::string title, std::vector<Vertex> obj) : 
+Scene::Scene(int width, int height, std::string title) : 
 	viewMatrix(1.f),
 	projectionMatrix(1.f),
-	camera(Vector3f(0, 0, 1.f), Vector3f(0.f, 0.f, 1.f), Vector3f(0.f, 1.f, 0.f))
+	camera(Vector3f(0, 0, 3.f), Vector3f(0.f, 0.f, 1.f), Vector3f(0.f, 1.f, 0.f))
 {
 	this->cameraPos = Vector3f(0.f, 0.f, 1.f);
 	this->worldUp =  Vector3f(0.f, 1.f, 0.f);
 	this->cameraFront = Vector3f(0.f, 0.f, -1.f);
 	this->lightPosition = Vector3f(0.f, 0.f, 1.f);
 
-	this->fov = 90.f;
+	this->fov = 45.f;
 	this->nearPlane = 0.1f;
 	this->farPlane = 100.f;
 
@@ -34,7 +33,6 @@ Scene::Scene(int width, int height, std::string title, std::vector<Vertex> obj) 
 	this->mouseOffsetY = 0;
 	this->firstMouse = true;
 
-	this->obj = obj;
 	try {
 		this->initGLFW();
 		this->window.createWindow(width, height, title);
@@ -148,7 +146,7 @@ void Scene::initModels()
 {
 	
 	this->models.push_back(new Model(
-		Vector3f(0.0f, 0.f, 0.0f),
+		Vector3f(0.0f, 0.f, -1.f),
 		this->materials[MATERIAL_ENUM],
 		this->textures.at("peimariSymbol"),
 		this->textures.at("peimariSymbolSpecular"),
@@ -234,10 +232,10 @@ void Scene::handleKeyboardInputs()
 		this->camera.move(dt, direction_enum::LEFT);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		this->camera.move(dt, direction_enum::RIGHT);
-	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-		this->cameraPos.y -= SPEED;
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		this->cameraPos.y += SPEED;
+	if(glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+		this->zoom(1.f);
+	if(glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+		this->zoom(-1.f);
 }
 
 void Scene::handleMouseInputs()
@@ -255,4 +253,13 @@ void Scene::handleMouseInputs()
 
 	this->lastMouseX = this->mouseX;
 	this->lastMouseY = this->mouseY;
+}
+
+void Scene::zoom(float value)
+{
+	this->fov += value;
+	if (this->fov >= this->maxFOV)
+		this->fov = this->maxFOV;
+	else if (this->fov <= this->minFOV)
+		this->fov = this->minFOV;
 }

@@ -1,5 +1,7 @@
 #include <cmath>
 
+#include <iostream> //DELETED !!!!!!
+
 #include "Vector3f.hpp"
 
 Vector3f::Vector3f() : x(0), y(0), z(0) {}
@@ -37,9 +39,12 @@ Vector3f &operator+=(Vector3f &lhs, const Vector3f &rhs)
 	lhs.z += rhs.z;
 	return lhs;
 }
-Vector3f operator-=(const Vector3f &lhs, const Vector3f &rhs)
+Vector3f &operator-=(Vector3f &lhs, const Vector3f &rhs)
 {
-	return (Vector3f(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z));
+	lhs.x -= rhs.x;
+	lhs.y -= rhs.y;
+	lhs.z -= rhs.z;
+	return lhs;
 }
 
 Vector3f operator*(const Vector3f &vec, const float &f)

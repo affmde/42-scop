@@ -22,9 +22,12 @@ public:
 	const Vector3f getPosition() const;
 	void handleInput(const float &dt, const int direction, const double &mouseOffsetX, const double &mouseOffsetY);
 	void move(const float &dt, const direction_enum direction);
+	void scroll(const float &dt, const double &offsetX, const double &offsetY);
 
 private:
 	Mat4 viewMatrix;
+	Vector3f targetPos;
+	Vector3f direction;
 	Vector3f worldUp;
 	Vector3f position;
 	Vector3f front;
@@ -35,8 +38,8 @@ private:
 	float yaw;
 	float roll;
 
-	float movementSpeed;
-	float mouseSensitivity;
+	const float movementSpeed = 3.f;
+	const float mouseSensitivity = 1.f;
 
 	void updateVectors();
 	void handleMouseInput(const float &dt, const double &mouseOffsetX, const double &mouseOffsetY);

@@ -11,12 +11,9 @@ Camera::Camera(Vector3f cameraPosition, Vector3f direction, Vector3f worldUp) : 
 	this->right = Vector3f(0.f);
 	this->up = worldUp;
 
-	this->movementSpeed = 3.f;
-	this->mouseSensitivity = 5.f;
-
-	this->pitch = 0;
+	this->pitch = 0.f;
 	this->yaw = -90.f;
-	this->roll = 0;
+	this->roll = 0.f;
 	
 	this->updateVectors();
 }
@@ -38,10 +35,7 @@ void Camera::updateVectors()
 	this->front.y = sin(toRadians(this->pitch));
 	this->front.z = sin(toRadians(this->yaw)) * cos(toRadians(this->pitch));
 
-
-	std::cout << "Front before: " << this->front << std::endl;
 	this->front = normalize(this->front);
-	std::cout << "Front after: " << this->front << std::endl;
 	this->right = normalize(cross(this->front, this->worldUp));
 	this->up = normalize(cross(this->right, this->front));
 }
@@ -75,10 +69,7 @@ void Camera::move(const float &dt, const direction_enum direction)
 			this->position -= this->front * this->movementSpeed * dt;
 			break;
 		case direction_enum::LEFT:
-			// std::cout << "Should move camera left" << std::endl;
-			// std::cout << "Position before: " << this->position << std::endl;
 			this->position -= this->right * this->movementSpeed * dt;
-			// std::cout << "Position after: " << this->position << std::endl;
 			break;
 		case direction_enum::RIGHT:
 			this->position += this->right * this->movementSpeed * dt;
