@@ -74,6 +74,33 @@ void Camera::move(const float &dt, const direction_enum direction)
 		case direction_enum::RIGHT:
 			this->position += this->right * this->movementSpeed * dt;
 			break;
+		case direction_enum::UP:
+			this->position += this->up * this->movementSpeed * dt;
+			break;
+		case direction_enum::DOWN:
+			this->position -= this->up * this->movementSpeed * dt;
+			break;
+		default:
+			break;
+	}
+}
+
+void Camera::rotate(direction_enum direction)
+{
+	switch(direction)
+	{
+		case direction_enum::FORWARD:
+			this->pitch += 1.f;
+			break;
+		case direction_enum::BACKWARD:
+			this->pitch -= 1.f;
+			break;
+		case direction_enum::LEFT:
+			this->yaw -= 1.f;
+			break;
+		case direction_enum::RIGHT:
+			this->yaw += 1.f;
+			break;
 		default:
 			break;
 	}

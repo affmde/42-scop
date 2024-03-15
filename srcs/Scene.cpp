@@ -7,11 +7,12 @@
 
 #define SPEED 0.05f
 
-Scene::Scene(int width, int height, std::string title) : 
+Scene::Scene(int width, int height, std::string title, std::string filePath) : 
 	viewMatrix(1.f),
 	projectionMatrix(1.f),
 	camera(Vector3f(0, 0, 3.f), Vector3f(0.f, 0.f, 1.f), Vector3f(0.f, 1.f, 0.f))
 {
+	this->filePath = filePath;
 	this->cameraPos = Vector3f(0.f, 0.f, 1.f);
 	this->worldUp =  Vector3f(0.f, 1.f, 0.f);
 	this->cameraFront = Vector3f(0.f, 0.f, -1.f);
@@ -150,7 +151,7 @@ void Scene::initModels()
 		this->materials[MATERIAL_ENUM],
 		this->textures.at("peimariSymbol"),
 		this->textures.at("peimariSymbolSpecular"),
-		"Models/andre.obj"
+		this->filePath
 	));
 }
 
@@ -162,8 +163,6 @@ void Scene::update()
 {
 	this->updateDeltaTime();
 	this->handleInput();
-	for(auto &model : this->models)
-		model->rotate(Vector3f(0.f, 1.f, 0.f));
 }
 
 void Scene::render()
@@ -232,10 +231,22 @@ void Scene::handleKeyboardInputs()
 		this->camera.move(dt, direction_enum::LEFT);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		this->camera.move(dt, direction_enum::RIGHT);
-	if(glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		this->camera.move(dt, direction_enum::UP);
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		this->camera.move(dt, direction_enum::DOWN);
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
 		this->zoom(1.f);
-	if(glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
 		this->zoom(-1.f);
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		this->camera.rotate(direction_enum::LEFT);
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		this->camera.rotate(direction_enum::RIGHT);
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		this->camera.rotate(direction_enum::FORWARD);
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		this->camera.rotate(direction_enum::BACKWARD);
 }
 
 void Scene::handleMouseInputs()

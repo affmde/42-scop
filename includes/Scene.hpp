@@ -19,7 +19,7 @@ enum mesh_enum { MESH_ENUM = 0 };
 class Scene
 {
 public:
-	Scene(int width, int height, std::string title);
+	Scene(int width, int height, std::string title, std::string filePath);
 	~Scene();
 
 	void update();
@@ -36,6 +36,7 @@ private:
 	std::vector<Material*> materials;
 	std::vector<Vector3f*> lights;
 	std::vector<Model*> models;
+	std::string filePath;
 
 	Mat4 viewMatrix;
 	Mat4 projectionMatrix;

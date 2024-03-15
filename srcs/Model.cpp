@@ -37,7 +37,7 @@ Model::Model(Vector3f position, Material *material, Texture *texDif, Texture *te
 		0,
 		Vector3f(0, 0.5f, 0)
 	);
-	this->meshes.insert(std::make_pair("filePath", m));
+	this->meshes.insert(std::make_pair(filePath, m));
 	for(auto &i : this->meshes)
 	{
 		i.second->move(this->position);

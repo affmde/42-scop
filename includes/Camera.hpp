@@ -9,7 +9,9 @@ enum class direction_enum
 	FORWARD = 0,
 	BACKWARD,
 	LEFT,
-	RIGHT
+	RIGHT,
+	UP,
+	DOWN
 };
 
 class Camera
@@ -22,7 +24,7 @@ public:
 	const Vector3f getPosition() const;
 	void handleInput(const float &dt, const int direction, const double &mouseOffsetX, const double &mouseOffsetY);
 	void move(const float &dt, const direction_enum direction);
-	void scroll(const float &dt, const double &offsetX, const double &offsetY);
+	void rotate(direction_enum direction);
 
 private:
 	Mat4 viewMatrix;
@@ -39,7 +41,7 @@ private:
 	float roll;
 
 	const float movementSpeed = 3.f;
-	const float mouseSensitivity = 1.f;
+	const float mouseSensitivity = 0.3f;
 
 	void updateVectors();
 	void handleMouseInput(const float &dt, const double &mouseOffsetX, const double &mouseOffsetY);
