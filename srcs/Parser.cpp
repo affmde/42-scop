@@ -53,6 +53,7 @@ std::vector<Vertex> Parser::loadObj(std::string pathFile)
 			}
 			else {}
 		}
+		
 		file.close();
 		vertices.resize(verticesPositionIndices.size(), Vertex());
 		for(int i = 0; i < vertices.size(); i++)
@@ -61,7 +62,7 @@ std::vector<Vertex> Parser::loadObj(std::string pathFile)
 				vertices[i].position = verticesPosition[verticesPositionIndices[i] - 1];
 			if (!verticesTextureCoord.empty())
 				vertices[i].texcoord = verticesTextureCoord[verticesTexCoordIndices[i] - 1];
-			if (!verticesNormalIndices.empty())
+			if (!verticesNormal.empty())
 				vertices[i].normal = verticesNormal[verticesNormalIndices[i] - 1];
 			vertices[i].color = getRandomColor();
 		}
@@ -89,14 +90,25 @@ void Parser::parseFaceLine(std::stringstream &ss)
 		std::vector<std::string> indicesVec2 = str_split(tempVertex[vert2], "/");
 		std::vector<std::string> indicesVec3 = str_split(tempVertex[vert3], "/");
 		int counter = 0;
+
 		for(auto &v : indicesVec1)
 		{
 			if (counter == 0)
 				verticesPositionIndices.push_back(std::stoi(v));
 			else if (counter == 1)
-				verticesTexCoordIndices.push_back(std::stoi(v));
+			{
+				if (!v.compare(""))
+					verticesTexCoordIndices.push_back(1);
+				else
+					verticesTexCoordIndices.push_back(std::stoi(v));
+			}
 			else if (counter == 2)
-				verticesNormalIndices.push_back(std::stoi(v));
+			{
+				if (!v.compare(""))
+					verticesNormalIndices.push_back(1);
+				else
+					verticesNormalIndices.push_back(std::stoi(v));
+			}
 			++counter;
 		}
 		counter = 0;
@@ -105,9 +117,19 @@ void Parser::parseFaceLine(std::stringstream &ss)
 			if (counter == 0)
 				verticesPositionIndices.push_back(std::stoi(v));
 			else if (counter == 1)
-				verticesTexCoordIndices.push_back(std::stoi(v));
+			{
+				if (!v.compare(""))
+					verticesTexCoordIndices.push_back(1);
+				else
+					verticesTexCoordIndices.push_back(std::stoi(v));
+			}
 			else if (counter == 2)
-				verticesNormalIndices.push_back(std::stoi(v));
+			{
+				if (!v.compare(""))
+					verticesNormalIndices.push_back(1);
+				else
+					verticesNormalIndices.push_back(std::stoi(v));
+			}
 			++counter;
 		}
 		counter = 0;
@@ -116,9 +138,19 @@ void Parser::parseFaceLine(std::stringstream &ss)
 			if (counter == 0)
 				verticesPositionIndices.push_back(std::stoi(v));
 			else if (counter == 1)
-				verticesTexCoordIndices.push_back(std::stoi(v));
+			{
+				if (!v.compare(""))
+					verticesTexCoordIndices.push_back(1);
+				else
+					verticesTexCoordIndices.push_back(std::stoi(v));
+			}
 			else if (counter == 2)
-				verticesNormalIndices.push_back(std::stoi(v));
+			{
+				if (!v.compare(""))
+					verticesNormalIndices.push_back(1);
+				else
+					verticesNormalIndices.push_back(std::stoi(v));
+			}
 			++counter;
 		}
 		vert2++;

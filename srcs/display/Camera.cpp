@@ -1,5 +1,4 @@
 #include <cmath>
-#include <iostream> //CAN DELTE THIS!!!!!!
 
 #include "Camera.hpp"
 #include "Utils.hpp"

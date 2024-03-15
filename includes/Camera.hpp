@@ -40,7 +40,7 @@ private:
 	float yaw;
 	float roll;
 
-	const float movementSpeed = 3.f;
+	const float movementSpeed = 5.f;
 	const float mouseSensitivity = 0.3f;
 
 	void updateVectors();
