@@ -10,7 +10,6 @@ enum class direction_enum
 	BACKWARD,
 	LEFT,
 	RIGHT
-
 };
 
 class Camera
