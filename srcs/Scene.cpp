@@ -270,18 +270,19 @@ void Scene::handleKeyboardInputs()
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		this->camera.rotate(direction_enum::BACKWARD);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-	{
 		this->fade();
-		// if (this->drawMode == DrawMode::LINES)
-		// {
-		// 	this->drawMode = DrawMode::TEXTURE;
-		// 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		// }
-		// else
-		// {
-		// 	this->drawMode = DrawMode::LINES;
-		// 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		// }
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+	{
+		if (this->drawMode == DrawMode::LINES)
+		{
+			this->drawMode = DrawMode::TEXTURE;
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+		else
+		{
+			this->drawMode = DrawMode::LINES;
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
 	}
 }
 

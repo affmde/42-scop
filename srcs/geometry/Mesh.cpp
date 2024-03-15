@@ -1,6 +1,8 @@
 #include "Mesh.hpp"
 #include "Utils.hpp"
 
+#include <iostream>
+
 Mesh::Mesh(Vertex *vertexArray,
 		const unsigned int &numberOfVertices,
 		unsigned int* indexArray,

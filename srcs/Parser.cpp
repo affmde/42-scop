@@ -1,5 +1,6 @@
 #include <fstream>
 #include <time.h>
+#include <iostream>
 
 #include "Parser.hpp"
 #include "Utils.hpp"
@@ -78,19 +79,49 @@ void Parser::parseFaceLine(std::stringstream &ss)
 	std::vector<std::string> tempVertex = str_split(str, " ");
 	tempVertex.erase(tempVertex.begin());
 	std::vector<std::string> indicesVec;
-	for(auto &l : tempVertex)
+	int vert1 = 0;
+	int vert2 = 1;
+	int vert3 = 2;
+	int totalVerticesInFace = tempVertex.size();
+	while(vert3 < totalVerticesInFace)
 	{
-		indicesVec = str_split(l, "/");
+		std::vector<std::string> indicesVec1 = str_split(tempVertex[vert1], "/");
+		std::vector<std::string> indicesVec2 = str_split(tempVertex[vert2], "/");
+		std::vector<std::string> indicesVec3 = str_split(tempVertex[vert3], "/");
 		int counter = 0;
-		for(auto &i : indicesVec)
+		for(auto &v : indicesVec1)
 		{
 			if (counter == 0)
-				verticesPositionIndices.push_back(std::stoi(i));
+				verticesPositionIndices.push_back(std::stoi(v));
 			else if (counter == 1)
-				verticesTexCoordIndices.push_back(std::stoi(i));
+				verticesTexCoordIndices.push_back(std::stoi(v));
 			else if (counter == 2)
-				verticesNormalIndices.push_back(std::stoi(i));
+				verticesNormalIndices.push_back(std::stoi(v));
 			++counter;
 		}
+		counter = 0;
+		for(auto &v : indicesVec2)
+		{
+			if (counter == 0)
+				verticesPositionIndices.push_back(std::stoi(v));
+			else if (counter == 1)
+				verticesTexCoordIndices.push_back(std::stoi(v));
+			else if (counter == 2)
+				verticesNormalIndices.push_back(std::stoi(v));
+			++counter;
+		}
+		counter = 0;
+		for(auto &v : indicesVec3)
+		{
+			if (counter == 0)
+				verticesPositionIndices.push_back(std::stoi(v));
+			else if (counter == 1)
+				verticesTexCoordIndices.push_back(std::stoi(v));
+			else if (counter == 2)
+				verticesNormalIndices.push_back(std::stoi(v));
+			++counter;
+		}
+		vert2++;
+		vert3++;
 	}
 }

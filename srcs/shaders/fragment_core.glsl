@@ -60,12 +60,10 @@ void main()
 	//Specular light
 	vec3 specularFinal = calculateSpecular(material, vs_position, lightPosition, vs_normal, cameraPos);
 
-	//Attenuation
-
 	vec4 calculatedColor = texture(material.diffuseTex, vs_texcoord)
 	* (vec4(ambientFinal, 1.f) + vec4(diffuseFinal, 1.f) + vec4(specularFinal, 1.f));
 
-	vec4 colorsDisplay = vec4(vs_color, 1.f) * fadeFactor;
+	vec4 colorsDisplay = vec4(vs_color, 1.f) * fadeFactor * (vec4(ambientFinal, 1.f) + vec4(diffuseFinal, 1.f) + vec4(specularFinal, 1.f));
 	vec4 texturesDisplay = fadeFactor == 0.f ? calculatedColor : calculatedColor * (1.f - fadeFactor);
 	fs_color = colorsDisplay + texturesDisplay;
 }
