@@ -13,5 +13,5 @@ Vertex::~Vertex() {}
 
 std::ostream& operator<<(std::ostream& os, const Vertex& vertex)
 {
-	return os << vertex.position << " | " << vertex.color << " | " << vertex.texcoord << std::endl;
+	return os << vertex.position << " | " << vertex.texcoord << " | " << vertex.texcoord << " | " << vertex.color << std::endl;
 }

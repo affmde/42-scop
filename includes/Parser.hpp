@@ -33,6 +33,11 @@ private:
 	std::stringstream ss;
 
 	void parseFaceLine(std::stringstream &line);
+	void validateVerticeData(std::string &data, size_t vectorSize);
+	void validateFace(std::vector<std::string> &v1, std::vector<std::string> &v2, std::vector<std::string> &v3);
+	void checkForOverflow(std::string &line);
+	void checkInvalidIndex(std::string &line, int size);
+	void validateVertice(std::vector<std::string> &v);
 };
 
 #endif
