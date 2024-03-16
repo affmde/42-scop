@@ -7,6 +7,7 @@ Model::Model(Vector3f position, Material *material, Texture *texDif, Texture *te
 	this->material = material;
 	this->overrideTexutureDiffuse = texDif;
 	this->overrideTextureSpecular = texSpe;
+	this->selfRotate = false;
 
 	for(auto &i : meshes)
 	{
@@ -25,6 +26,7 @@ Model::Model(Vector3f position, Material *material, Texture *texDif, Texture *te
 	this->material = material;
 	this->overrideTexutureDiffuse = texDif;
 	this->overrideTextureSpecular = texSpe;
+	this->selfRotate = false;
 
 	Parser parser;
 	std::vector<Vertex> mesh = parser.loadObj(filePath);
@@ -52,6 +54,8 @@ void Model::update()
 
 void Model::render(ShaderLoader *shader)
 {
+	if (this->selfRotate)
+		this->rotate(Vector3f(0.f, 1.f, 0.f));
 	this->material->sendToShader(*shader);
 	
 	shader->use();
@@ -71,3 +75,5 @@ void Model::rotate(const Vector3f rotation)
 	for(auto &mesh : this->meshes)
 		mesh.second->rotate(rotation);
 }
+void Model::setSelfRotate() { this->selfRotate = !this->selfRotate; }
+bool Model::getSelfRotate() const { return this->selfRotate; }

@@ -129,7 +129,7 @@ void Mesh::render(ShaderLoader *shader)
 void Mesh::updateModelMatrix()
 {
 	this->modelMatrix.reset();
-	Mat4 tr = this->modelMatrix.translate(this->position - this->origin);
+	Mat4 tr = this->modelMatrix.translate(this->position);
 	Mat4 rx = this->modelMatrix.rotate(toRadians(this->rotation.x), Vector3f(1.0f, 0.0f, 0.0f));
 	Mat4 ry = this->modelMatrix.rotate(toRadians(this->rotation.y), Vector3f(0.0f, 1.0f, 0.0f));
 	Mat4 rz = this->modelMatrix.rotate(toRadians(this->rotation.z), Vector3f(0.0f, 0.0f, 1.0f));

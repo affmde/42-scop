@@ -284,6 +284,11 @@ void Scene::handleKeyboardInputs()
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
 	}
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+	{
+		for(auto &model : this->models)
+			model->setSelfRotate();
+	}
 }
 
 void Scene::handleMouseInputs()

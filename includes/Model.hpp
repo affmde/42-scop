@@ -19,6 +19,9 @@ public:
 	void render(ShaderLoader *shader);
 
 	void rotate(const Vector3f rotation);
+	void setSelfRotate();
+
+	bool getSelfRotate() const;
 
 private:
 	Material *material;
@@ -28,6 +31,7 @@ private:
 
 	Vector3f origin;
 	Vector3f position;
+	bool selfRotate;
 };
 
 #endif
