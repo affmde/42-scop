@@ -59,11 +59,11 @@ std::vector<Vertex> Parser::loadObj(std::string pathFile)
 		vertices.resize(verticesPositionIndices.size(), Vertex());
 		for(int i = 0; i < vertices.size(); i++)
 		{
-			if (!verticesPosition.empty())
+			if (!verticesPosition.empty() && verticesPositionIndices[i] != -1)
 				vertices[i].position = verticesPosition[verticesPositionIndices[i] - 1];
-			if (!verticesTextureCoord.empty())
+			if (!verticesTextureCoord.empty() && verticesTexCoordIndices[i] != -1)
 				vertices[i].texcoord = verticesTextureCoord[verticesTexCoordIndices[i] - 1];
-			if (!verticesNormal.empty())
+			if (!verticesNormal.empty() && verticesNormalIndices[i] != -1)
 				vertices[i].normal = verticesNormal[verticesNormalIndices[i] - 1];
 			vertices[i].color = getRandomColor();
 		}
@@ -100,14 +100,14 @@ void Parser::parseFaceLine(std::stringstream &ss)
 			else if (counter == 1)
 			{
 				if (!v.compare(""))
-					verticesTexCoordIndices.push_back(1);
+					verticesTexCoordIndices.push_back(-1);
 				else
 					verticesTexCoordIndices.push_back(std::stof(v));
 			}
 			else if (counter == 2)
 			{
 				if (!v.compare(""))
-					verticesNormalIndices.push_back(1);
+					verticesNormalIndices.push_back(-1);
 				else
 					verticesNormalIndices.push_back(std::stof(v));
 			}
@@ -121,14 +121,14 @@ void Parser::parseFaceLine(std::stringstream &ss)
 			else if (counter == 1)
 			{
 				if (!v.compare(""))
-					verticesTexCoordIndices.push_back(1);
+					verticesTexCoordIndices.push_back(-1);
 				else
 					verticesTexCoordIndices.push_back(std::stof(v));
 			}
 			else if (counter == 2)
 			{
 				if (!v.compare(""))
-					verticesNormalIndices.push_back(1);
+					verticesNormalIndices.push_back(-1);
 				else
 					verticesNormalIndices.push_back(std::stof(v));
 			}
@@ -142,14 +142,14 @@ void Parser::parseFaceLine(std::stringstream &ss)
 			else if (counter == 1)
 			{
 				if (!v.compare(""))
-					verticesTexCoordIndices.push_back(1);
+					verticesTexCoordIndices.push_back(-1);
 				else
 					verticesTexCoordIndices.push_back(std::stof(v));
 			}
 			else if (counter == 2)
 			{
 				if (!v.compare(""))
-					verticesNormalIndices.push_back(1);
+					verticesNormalIndices.push_back(-1);
 				else
 					verticesNormalIndices.push_back(std::stof(v));
 			}
@@ -164,8 +164,15 @@ void Parser::parseFaceLine(std::stringstream &ss)
 void Parser::validateFace(std::vector<std::string> &v1, std::vector<std::string> &v2, std::vector<std::string> &v3)
 {
 	if (v1.size() > 3 || v2.size() > 3 || v3.size() > 3)
+	{
+		for(auto &v : v1)
+			std::cout << v << std::endl;
+		for(auto &v : v2)
+			std::cout << v << std::endl;
+		for(auto &v : v3)
+			std::cout << v << std::endl;
 		throw std::runtime_error("Error: Invalid face");
-	
+	}
 	validateVertice(v1);
 	validateVertice(v2);
 	validateVertice(v3);

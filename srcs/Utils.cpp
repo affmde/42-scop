@@ -1,5 +1,6 @@
 #include <cmath>
 #include <random>
+#include <iostream> //DELETE THIS!!!!!!
 
 #include "Utils.hpp"
 
@@ -16,6 +17,8 @@ std::vector<std::string> str_split(std::string line, std::string delimeter)
 	}
 	if (!line.empty())
 		vector.push_back(line);
+	else if (delimeter == "/" && line.empty() && vector.size() < 3) //STILL MAKE SURE THIS WORKS PROPERLY!!!!
+		vector.push_back("");
 	return vector;
 }
 
