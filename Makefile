@@ -1,5 +1,23 @@
 .SILENT=
 
+# Check operating system on Windows
+ifeq ($(OS), Windows_NT)
+	OS_TYPE := Windows
+else ifneq ($(COMSPEC),)
+	OS_TYPE := Windows
+else
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Linux)
+		OS_TYPE := Linux
+	endif
+	ifeq ($(UNAME_S),Darwin)
+		OS_TYPE := macOS
+	endif
+endif
+
+# Print operating system type
+$(info Operating System: $(OS_TYPE))
+
 CXX = g++
 
 COLOUR_GREEN=\033[0;32m
@@ -13,8 +31,22 @@ GLFW	:= libraries/glfw
 GLAD	:= libraries/glad
 
 HEADERS	:= -I includes -I $(GLEW)/build/files/include -I $(GLAD)/include -I libraries
-LIBS	:= $(GLFW)/files/lib/libglfw3.a -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+LIBS	:= $(GLFW)/files/lib/libglfw3.a
+LINUX_FLAGS := -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+WINDOWS_FLAGS := -lopengl32 -lgdi32 -luser32 -lkernel32
+MAC_OS_FLAGS := -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
 CSRCS	:= libraries/glad/src/glad.c
+
+ifeq ($(OS_TYPE), Linux)
+	LIBS	+= $(LINUX_FLAGS)
+	NAME	:= $(NAME)
+else ifneq ($(OS_TYPE), Windows_NT)
+	LIBJS += $(WINDOWS_FLAGS)
+	NAME	:= $(NAME).exe
+else
+	LIBS += $(MAC_OS_FLAGS)
+endif
+SYSTEM_LIBS =
 
 OBJS_DIR = obj/
 CORE_DIR = srcs/
@@ -23,9 +55,9 @@ DISPLAY_DIR = srcs/display/
 GLAD_DIR = libraries/glad/src/
 PARSING_DIR = srcs/parsing/
 
-CORE = main.cpp Checker.cpp Utils.cpp ShaderLoader.cpp Texture.cpp Material.cpp Mesh.cpp Window.cpp Scene.cpp Model.cpp
+CORE = main.cpp Checker.cpp Utils.cpp ShaderLoader.cpp Texture.cpp Material.cpp Mesh.cpp Scene.cpp Model.cpp
 GEOMETRY = Vector3f.cpp Vector2f.cpp Vertex.cpp Mat4.cpp Primitives.cpp Quad.cpp Triangle.cpp Pyramid.cpp
-DISPLAY = Camera.cpp
+DISPLAY = Camera.cpp Window.cpp
 GLAD = glad.c
 PARSING = BMP.cpp Parser.cpp
 
@@ -52,7 +84,7 @@ glfw:
 
 
 downloadGLFW:
-	@if [ ! -d "libraries" ]; then \
+	@if [ ! -d "libraries/glfw" ]; then \
 		echo "$(COLOUR_GREEN)Creating libraries$(COLOUR_END)"; \
 		mkdir libraries; \
 		echo "Downloading GLFW repository"; \
