@@ -35,42 +35,95 @@ std::vector<Vertex> Parser::loadObj(std::string pathFile)
 			else if (prefix == "use_mtl") {}
 			else if (prefix == "v")
 			{
-				ss >> tempVec3.x >> tempVec3.y >> tempVec3.z;
-				verticesPosition.push_back(tempVec3);
+				Vector3f vector = this->parseV_VN(ss);
+				verticesPosition.push_back(vector);
 			}
 			else if (prefix == "vt")
 			{
-				ss >> tempVec2.x >> tempVec2.y;
-				verticesTextureCoord.push_back(tempVec2);
+				Vector2f vector = this->parseVT(ss);
+				verticesTextureCoord.push_back(vector);
 			}
 			else if (prefix == "vn")
 			{
-				ss >> tempVec3.x >> tempVec3.y >> tempVec3.z;
-				verticesNormal.push_back(tempVec3);
+				Vector3f vector = this->parseV_VN(ss);
+				verticesNormal.push_back(vector);
 			}
 			else if (prefix == "f")
-			{
 				parseFaceLine(ss);
-			}
 			else {}
 		}
 		
 		file.close();
-		vertices.resize(verticesPositionIndices.size(), Vertex());
-		for(int i = 0; i < vertices.size(); i++)
-		{
-			if (!verticesPosition.empty() && verticesPositionIndices[i] != -1)
-				vertices[i].position = verticesPosition[verticesPositionIndices[i] - 1];
-			if (!verticesTextureCoord.empty() && verticesTexCoordIndices[i] != -1)
-				vertices[i].texcoord = verticesTextureCoord[verticesTexCoordIndices[i] - 1];
-			if (!verticesNormal.empty() && verticesNormalIndices[i] != -1)
-				vertices[i].normal = verticesNormal[verticesNormalIndices[i] - 1];
-			vertices[i].color = getRandomColor();
-		}
+		this->populateVertex();
 	}
 	else
 		throw std::runtime_error("Error: Could not open file " + pathFile);
 	return vertices;
+}
+
+void Parser::populateVertex()
+{
+	vertices.resize(verticesPositionIndices.size(), Vertex());
+	for(int i = 0; i < vertices.size(); i++)
+	{
+		if (!verticesPosition.empty() && verticesPositionIndices[i] != -1)
+			vertices[i].position = verticesPosition[verticesPositionIndices[i] - 1];
+		if (!verticesTextureCoord.empty() && verticesTexCoordIndices[i] != -1)
+			vertices[i].texcoord = verticesTextureCoord[verticesTexCoordIndices[i] - 1];
+		if (!verticesNormal.empty() && verticesNormalIndices[i] != -1)
+			vertices[i].normal = verticesNormal[verticesNormalIndices[i] - 1];
+		vertices[i].color = getRandomColor();
+	}
+}
+
+Vector3f Parser::parseV_VN(std::stringstream &ss)
+{
+	std::string line = ss.str();
+	std::vector<std::string> tempVertex = str_split(line, " ");
+	if (tempVertex.size() != 4)
+		throw std::runtime_error("Error: Invalid vertex: " + line);
+	Vector3f vec;
+	try  {
+		for(int i = 1; i < tempVertex.size(); i++)
+			invalidVecValue(tempVertex[i]);
+		vec.x = std::stof(tempVertex[1]);
+		vec.y = std::stof(tempVertex[2]);
+		vec.z = std::stof(tempVertex[3]);
+	} catch(std::exception &e) {
+		throw std::runtime_error("Error: Invalid vertex: " + line);
+	}
+	return vec;
+}
+Vector2f Parser::parseVT(std::stringstream &ss)
+{
+	std::string line = ss.str();
+	std::vector<std::string> tempVertex = str_split(line, " ");
+	if (tempVertex.size() != 3)
+		throw std::runtime_error("Error: Invalid texture coordinate: " + line);
+	Vector2f vec;
+	try
+	{
+		for(int i = 1; i < tempVertex.size(); i++)
+			invalidVecValue(tempVertex[i]);
+		vec.x = std::stof(tempVertex[1]);
+		vec.y = std::stof(tempVertex[2]);
+	} catch(std::exception &e) {
+		throw std::runtime_error("Error: Invalid texture coordinate: " + line);
+	}
+	return vec;
+}
+
+void Parser::invalidVecValue(std::string &val)
+{
+	float number = std::stof(val);
+	this->checkForOverflow(val);
+	for(int i = 0; i < val.size(); i++)
+	{
+		if (!isdigit(val[i]) && val[i] != '.' && val[i] != '-')
+			throw std::runtime_error("Error: Invalid vertex: " + val);
+		if (val[i] == '-' && i != 0  || val[i] == '+' && i != 0)
+			throw std::runtime_error("Error: Invalid vertex: " + val);
+	}
 }
 
 void Parser::parseFaceLine(std::stringstream &ss)
@@ -91,75 +144,38 @@ void Parser::parseFaceLine(std::stringstream &ss)
 		std::vector<std::string> indicesVec2 = str_split(tempVertex[vert2], "/");
 		std::vector<std::string> indicesVec3 = str_split(tempVertex[vert3], "/");
 		validateFace(indicesVec1, indicesVec2, indicesVec3);
-		int counter = 0;
-
-		for(auto &v : indicesVec1)
-		{
-			if (counter == 0)
-				verticesPositionIndices.push_back(std::stof(v));
-			else if (counter == 1)
-			{
-				if (!v.compare(""))
-					verticesTexCoordIndices.push_back(-1);
-				else
-					verticesTexCoordIndices.push_back(std::stof(v));
-			}
-			else if (counter == 2)
-			{
-				if (!v.compare(""))
-					verticesNormalIndices.push_back(-1);
-				else
-					verticesNormalIndices.push_back(std::stof(v));
-			}
-			++counter;
-		}
-		counter = 0;
-		for(auto &v : indicesVec2)
-		{
-			if (counter == 0)
-				verticesPositionIndices.push_back(std::stof(v));
-			else if (counter == 1)
-			{
-				if (!v.compare(""))
-					verticesTexCoordIndices.push_back(-1);
-				else
-					verticesTexCoordIndices.push_back(std::stof(v));
-			}
-			else if (counter == 2)
-			{
-				if (!v.compare(""))
-					verticesNormalIndices.push_back(-1);
-				else
-					verticesNormalIndices.push_back(std::stof(v));
-			}
-			++counter;
-		}
-		counter = 0;
-		for(auto &v : indicesVec3)
-		{
-			if (counter == 0)
-				verticesPositionIndices.push_back(std::stof(v));
-			else if (counter == 1)
-			{
-				if (!v.compare(""))
-					verticesTexCoordIndices.push_back(-1);
-				else
-					verticesTexCoordIndices.push_back(std::stof(v));
-			}
-			else if (counter == 2)
-			{
-				if (!v.compare(""))
-					verticesNormalIndices.push_back(-1);
-				else
-					verticesNormalIndices.push_back(std::stof(v));
-			}
-			++counter;
-		}
+		populateIndices(indicesVec1);
+		populateIndices(indicesVec2);
+		populateIndices(indicesVec3);
 		vert2++;
 		vert3++;
 	}
 }
 
+void Parser::populateIndices(const std::vector<std::string> &vec)
+{
+	int counter = 0;
+	for(auto &v : vec)
+		{
+			if (counter == 0)
+				verticesPositionIndices.push_back(std::stof(v));
+			else if (counter == 1)
+			{
+				if (!v.compare(""))
+					verticesTexCoordIndices.push_back(-1);
+				else
+					verticesTexCoordIndices.push_back(std::stof(v));
+			}
+			else if (counter == 2)
+			{
+				if (!v.compare(""))
+					verticesNormalIndices.push_back(-1);
+				else
+					verticesNormalIndices.push_back(std::stof(v));
+			}
+			++counter;
+		}
+}
 
 void Parser::validateFace(std::vector<std::string> &v1, std::vector<std::string> &v2, std::vector<std::string> &v3)
 {

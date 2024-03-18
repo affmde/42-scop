@@ -63,7 +63,7 @@ private:
 	t_image img;
 	unsigned char *imgData;
 
-	void readFile3();
+	void readFile();
 	unsigned char greyScale(t_color rgb);
 	void convertImageToGrayScale();
 	int createBlackAndWhiteImage(t_BMPHeader header, t_BMPinfo info, t_BMPColorHeader colorHeader);

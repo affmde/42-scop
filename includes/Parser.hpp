@@ -32,6 +32,12 @@ private:
 
 	std::stringstream ss;
 
+	void populateVertex();
+	void populateIndices(const std::vector<std::string> &vec);
+
+	Vector3f parseV_VN(std::stringstream &ss);
+	Vector2f parseVT(std::stringstream &ss);
+	void invalidVecValue(std::string &val);
 	void parseFaceLine(std::stringstream &line);
 	void validateVerticeData(std::string &data, size_t vectorSize);
 	void validateFace(std::vector<std::string> &v1, std::vector<std::string> &v2, std::vector<std::string> &v3);

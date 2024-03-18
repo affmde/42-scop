@@ -28,8 +28,7 @@ BMP::BMP(std::string fileName)
 	this->colorHeader.colorSpaceType = 0x73524742;
 	bzero(this->colorHeader.unused, sizeof(this->colorHeader.unused));
 
-	this->readFile3();
-	//this->createBlackAndWhiteImage(this->header, this->info, this->colorHeader);
+	this->readFile();
 }
 BMP::~BMP()
 {
@@ -56,7 +55,7 @@ void BMP::convertData()
 
 unsigned char *BMP::getData() { return this->imgData; }
 
-void BMP::readFile3()
+void BMP::readFile()
 {
 	FILE * file = fopen(this->filePath.c_str(), "rb");
 	if (!file)
@@ -97,7 +96,6 @@ void BMP::readFile3()
 	}
 	fclose(file);
 	this->convertData();
-	//this->createBlackAndWhiteImage(this->header, this->info, this->colorHeader);
 }
 
 unsigned char BMP::greyScale(t_color rgb)
