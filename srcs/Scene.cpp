@@ -118,11 +118,11 @@ void Scene::initShaders()
 void Scene::initTextures()
 {
 	Texture *texture = new Texture();
-	texture->loadTexture("Textures/peimariSymbol.png", GL_TEXTURE_2D, 0);
-	this->textures.insert(std::make_pair("peimariSymbol",texture));
+	texture->loadTexture("Textures/woodBox.bmp", GL_TEXTURE_2D, 0);
+	this->textures.insert(std::make_pair("woodBox",texture));
 	Texture *texture2 = new Texture();
-	texture2->loadTexture("Textures/peimariSymbolSpecular.png", GL_TEXTURE_2D, 1);
-	this->textures.insert(std::make_pair("peimariSymbolSpecular", texture2));
+	texture2->loadTexture("Textures/woodBoxSpecular.bmp", GL_TEXTURE_2D, 1);
+	this->textures.insert(std::make_pair("woodBoxSpecular", texture2));
 }
 
 void Scene::initMaterials()
@@ -132,8 +132,8 @@ void Scene::initMaterials()
 			Vector3f(0.1f),
 			Vector3f(1.0f),
 			Vector3f(2.f),
-			this->textures.at("peimariSymbol")->getTextureUnit(),
-			this->textures.at("peimariSymbolSpecular")->getTextureUnit()));
+			this->textures.at("woodBox")->getTextureUnit(),
+			this->textures.at("woodBoxSpecular")->getTextureUnit()));
 }
 
 void Scene::initLights()
@@ -161,8 +161,8 @@ void Scene::initModels()
 	this->models.push_back(new Model(
 		Vector3f(0.0f, 0.f, -1.f),
 		this->materials[MATERIAL_ENUM],
-		this->textures.at("peimariSymbol"),
-		this->textures.at("peimariSymbolSpecular"),
+		this->textures.at("woodBox"),
+		this->textures.at("woodBoxSpecular"),
 		std::unordered_map<std::string, Mesh*>{
 			{"parsedObj", mesh}
 		}
@@ -195,8 +195,8 @@ void Scene::render()
 
 	glBindVertexArray(0);
 	glUseProgram(0);
-	this->textures.at("peimariSymbol")->unbind();
-	this->textures.at("peimariSymbolSpecular")->unbind();
+	this->textures.at("woodBox")->unbind();
+	this->textures.at("woodBoxSpecular")->unbind();
 }
 
 void Scene::updateUniforms()

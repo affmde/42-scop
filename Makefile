@@ -22,13 +22,15 @@ CORE_DIR = srcs/
 GEOMETRY_DIR = srcs/geometry/
 DISPLAY_DIR = srcs/display/
 GLAD_DIR = libraries/glad/src/
+PARSING_DIR = srcs/parsing/
 
 CORE = main.cpp Parser.cpp Checker.cpp Utils.cpp ShaderLoader.cpp Texture.cpp Material.cpp Mesh.cpp Window.cpp Scene.cpp Model.cpp
 GEOMETRY = Vector3f.cpp Vector2f.cpp Vertex.cpp Mat4.cpp Primitives.cpp Quad.cpp Triangle.cpp Pyramid.cpp
 DISPLAY = Camera.cpp
 GLAD = glad.c
+PARSING = BMP.cpp
 
-ALL_SOURCES = $(CORE) $(GEOMETRY) $(DISPLAY)
+ALL_SOURCES = $(CORE) $(GEOMETRY) $(DISPLAY) $(PARSING)
 ALL_OBJS = $(ALL_SOURCES:.cpp=.o) $(GLAD:.c=.o)
 
 OBJS = $(patsubst %, $(OBJS_DIR)%, $(ALL_OBJS))
@@ -95,5 +97,9 @@ $(OBJS_DIR)%.o: $(GEOMETRY_DIR)%.cpp
 	@echo "$(COLOUR_BLUE)$@ created$(COLOUR_END)"
 
 $(OBJS_DIR)%.o: $(DISPLAY_DIR)%.cpp
+	@$(CXX) $(CFLAGS) -c $< -o $@ $(HEADERS)
+	@echo "$(COLOUR_BLUE)$@ created$(COLOUR_END)"
+
+$(OBJS_DIR)%.o: $(PARSING_DIR)%.cpp
 	@$(CXX) $(CFLAGS) -c $< -o $@ $(HEADERS)
 	@echo "$(COLOUR_BLUE)$@ created$(COLOUR_END)"

@@ -1,7 +1,7 @@
 #include "Texture.hpp"
 
 #include <iostream>
-#include <stb_images/stb_image.h>
+#include "BMP.hpp"
 
 Texture::Texture()
 {
@@ -15,7 +15,7 @@ Texture::~Texture()
 }
 
 GLuint Texture::getTexture() const { return this->texture; }
-
+#include <cstring>
 bool Texture::loadTexture(std::string texturePath, GLenum type, unsigned int textureUnit)
 {
 	this->textureUnit = textureUnit;
@@ -24,8 +24,10 @@ bool Texture::loadTexture(std::string texturePath, GLenum type, unsigned int tex
 	glGenTextures(1, &this->texture);
 	glBindTexture(type, this->texture);
 
-	// TODO: LOAD IMAGE HERE. GET MY OWN PARSER!!!!
-	this->image = stbi_load(texturePath.c_str(), &this->width, &this->heigth, 0, STBI_rgb_alpha);
+	BMP bmp(texturePath);
+	this->image = bmp.getData();
+	this->width = bmp.getWidth();
+	this->heigth = bmp.getHeight();
 
 	glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -39,11 +41,10 @@ bool Texture::loadTexture(std::string texturePath, GLenum type, unsigned int tex
 	}
 	else
 	{
-		glTexImage2D(type, 0, GL_RGBA, this->width, this->heigth, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->image);
+		glTexImage2D(type, 0, GL_RGB, this->width, this->heigth, 0, GL_RGB, GL_UNSIGNED_BYTE, this->image);
 		glGenerateMipmap(type);
 	}
 	this->bind();
-	stbi_image_free(this->image);
 	return true;
 }
 
