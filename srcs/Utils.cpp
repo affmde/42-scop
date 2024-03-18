@@ -1,6 +1,5 @@
 #include <cmath>
 #include <random>
-#include <iostream> //DELETE THIS!!!!!!
 
 #include "Utils.hpp"
 
@@ -17,7 +16,7 @@ std::vector<std::string> str_split(std::string line, std::string delimeter)
 	}
 	if (!line.empty())
 		vector.push_back(line);
-	else if (delimeter == "/" && line.empty() && vector.size() < 3) //STILL MAKE SURE THIS WORKS PROPERLY!!!!
+	else if (delimeter == "/" && line.empty() && vector.size() < 3)
 		vector.push_back("");
 	return vector;
 }
@@ -70,13 +69,10 @@ Vector3f normalize(const Vector3f &a)
 {
 	float magnitude = std::sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
 
-    // Avoid division by zero by checking if magnitude is not zero
-    if (magnitude != 0) {
-        return Vector3f(a.x / magnitude, a.y / magnitude, a.z / magnitude);
-    } else {
-        // If magnitude is zero, return a zero vector or handle appropriately
-        return Vector3f(0.f, 0.f, 0.f);
-    }
+	if (magnitude != 0)
+		return Vector3f(a.x / magnitude, a.y / magnitude, a.z / magnitude);
+	else 
+		return Vector3f(0.f, 0.f, 0.f);
 }
 
 Vector3f cross(const Vector3f &a, const Vector3f &b)
@@ -89,7 +85,7 @@ Vector3f cross(const Vector3f &a, const Vector3f &b)
 Vector3f getRandomColor()
 {
 	std::random_device rd;
-    std::mt19937 gen(rd());
+	std::mt19937 gen(rd());
 	std::uniform_real_distribution<double> dis(0.0, 1.0);
 
 	Vector3f color;

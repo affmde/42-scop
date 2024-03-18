@@ -1,7 +1,5 @@
 #include <cmath>
 
-#include <iostream> //DELETED !!!!!!
-
 #include "Vector3f.hpp"
 
 Vector3f::Vector3f() : x(0), y(0), z(0) {}

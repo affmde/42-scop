@@ -8,8 +8,7 @@ COLOUR_BLUE=\033[0;34m
 COLOUR_END=\033[0m
 
 NAME	:= scope
-CFLAGS	:= 
-#CFLAGS	:= -Wextra -Wall -Werror -Wunreachable-code -Ofast
+CFLAGS	:= -Wextra -Wall -Werror
 GLFW	:= libraries/glfw
 GLAD	:= libraries/glad
 
