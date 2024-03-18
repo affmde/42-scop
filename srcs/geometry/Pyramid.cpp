@@ -21,8 +21,6 @@ Pyramid::Pyramid()
 	testVertices[11] = {Vector3f(0.5f, -0.5f, -0.5f),	Vector3f(0, 0, 1.f),	Vector2f(1.f, 0.f),			Vector3f(1.f, 0, 0)};
 
 	unsigned int nbrOfVertices = sizeof(testVertices) / sizeof(Vertex);
-	unsigned int indices[] = { 0, 1, 2, 0, 2, 3};
-	unsigned int nbrOfIndices = sizeof(indices) / sizeof(unsigned int);
 
 	this->set(testVertices, nbrOfVertices, nullptr, 0);
 }

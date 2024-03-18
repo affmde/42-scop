@@ -17,12 +17,12 @@ enum class direction_enum
 class Camera
 {
 public:
-	Camera(Vector3f cameraPosition, Vector3f direction, Vector3f worldUp);
+	Camera(Vector3f cameraPosition, Vector3f worldUp);
 	~Camera();
 
 	const Mat4 getViewMatrix();
 	const Vector3f getPosition() const;
-	void handleInput(const float &dt, const int direction, const double &mouseOffsetX, const double &mouseOffsetY);
+	void handleInput(const float &dt, const double &mouseOffsetX, const double &mouseOffsetY);
 	void move(const float &dt, const direction_enum direction);
 	void rotate(direction_enum direction);
 

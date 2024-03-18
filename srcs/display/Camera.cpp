@@ -3,7 +3,7 @@
 #include "Camera.hpp"
 #include "Utils.hpp"
 
-Camera::Camera(Vector3f cameraPosition, Vector3f direction, Vector3f worldUp) : viewMatrix(1.f)
+Camera::Camera(Vector3f cameraPosition, Vector3f worldUp) : viewMatrix(1.f)
 {
 	this->position = cameraPosition;
 	this->worldUp = worldUp;
@@ -39,7 +39,7 @@ void Camera::updateVectors()
 	this->up = normalize(cross(this->right, this->front));
 }
 
-void Camera::handleInput(const float &dt, const int direction, const double &mouseOffsetX, const double &mouseOffsetY)
+void Camera::handleInput(const float &dt, const double &mouseOffsetX, const double &mouseOffsetY)
 {
 	this->handleMouseInput(dt, mouseOffsetX, mouseOffsetY);
 }

@@ -64,7 +64,7 @@ std::vector<Vertex> Parser::loadObj(std::string pathFile)
 void Parser::populateVertex()
 {
 	vertices.resize(verticesPositionIndices.size(), Vertex());
-	for(int i = 0; i < vertices.size(); i++)
+	for(unsigned int i = 0; i < vertices.size(); i++)
 	{
 		if (!verticesPosition.empty() && verticesPositionIndices[i] != -1)
 			vertices[i].position = verticesPosition[verticesPositionIndices[i] - 1];
@@ -84,7 +84,7 @@ Vector3f Parser::parseV_VN(std::stringstream &ss)
 		throw std::runtime_error("Error: Invalid vertex: " + line);
 	Vector3f vec;
 	try  {
-		for(int i = 1; i < tempVertex.size(); i++)
+		for(unsigned int i = 1; i < tempVertex.size(); i++)
 			invalidVecValue(tempVertex[i]);
 		vec.x = std::stof(tempVertex[1]);
 		vec.y = std::stof(tempVertex[2]);
@@ -103,7 +103,7 @@ Vector2f Parser::parseVT(std::stringstream &ss)
 	Vector2f vec;
 	try
 	{
-		for(int i = 1; i < tempVertex.size(); i++)
+		for(unsigned int i = 1; i < tempVertex.size(); i++)
 			invalidVecValue(tempVertex[i]);
 		vec.x = std::stof(tempVertex[1]);
 		vec.y = std::stof(tempVertex[2]);
@@ -115,21 +115,18 @@ Vector2f Parser::parseVT(std::stringstream &ss)
 
 void Parser::invalidVecValue(std::string &val)
 {
-	float number = std::stof(val);
 	this->checkForOverflow(val);
-	for(int i = 0; i < val.size(); i++)
+	for(unsigned int i = 0; i < val.size(); i++)
 	{
 		if (!isdigit(val[i]) && val[i] != '.' && val[i] != '-')
 			throw std::runtime_error("Error: Invalid vertex: " + val);
-		if (val[i] == '-' && i != 0  || val[i] == '+' && i != 0)
+		if ((val[i] == '-' && i != 0 ) || (val[i] == '+' && i != 0))
 			throw std::runtime_error("Error: Invalid vertex: " + val);
 	}
 }
 
 void Parser::parseFaceLine(std::stringstream &ss)
 {
-	int temp;
-	int counter = 0;
 	std::string str(ss.str());
 	std::vector<std::string> tempVertex = str_split(str, " ");
 	tempVertex.erase(tempVertex.begin());
@@ -195,7 +192,7 @@ void Parser::validateFace(std::vector<std::string> &v1, std::vector<std::string>
 }
 void Parser::validateVertice(std::vector<std::string> &v)
 {
-	int i = 0;
+	unsigned int i = 0;
 	while(i < v.size())
 	{
 		if (i == 0)

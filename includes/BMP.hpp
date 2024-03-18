@@ -33,15 +33,6 @@ typedef struct s_BMPInfo
 	unsigned int imageSize;
 	unsigned int temp[4];
 }	t_BMPinfo;
-typedef struct BMPColorHeader
-{
-	uint32_t redMask;
-	uint32_t greenMask;
-	uint32_t blueMask;
-	uint32_t alphaMask;
-	uint32_t colorSpaceType;
-	uint32_t unused[16];
-}	t_BMPColorHeader;
 
 class BMP
 {
@@ -58,7 +49,6 @@ private:
 
 	t_BMPHeader header;
 	t_BMPinfo info;
-	t_BMPColorHeader colorHeader;
 
 	t_image img;
 	unsigned char *imgData;
@@ -66,7 +56,7 @@ private:
 	void readFile();
 	unsigned char greyScale(t_color rgb);
 	void convertImageToGrayScale();
-	int createBlackAndWhiteImage(t_BMPHeader header, t_BMPinfo info, t_BMPColorHeader colorHeader);
+	int createBlackAndWhiteImage(t_BMPHeader header, t_BMPinfo info);
 	void convertData();
 
 };

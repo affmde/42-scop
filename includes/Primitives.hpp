@@ -14,8 +14,8 @@ public:
 	void set(const Vertex *verices, const unsigned int numberOfVertices, const unsigned int *indices, const unsigned int numberOfIndices);
 	Vertex *getVertices();
 	unsigned int *getIndices();
-	const unsigned int getNumberOfVertices() const;
-	const unsigned int getNumberOfIndices() const;
+	unsigned int getNumberOfVertices() const;
+	unsigned int getNumberOfIndices() const;
 
 
 private:

@@ -17,5 +17,5 @@ void Primitive::set(const Vertex *verices, const unsigned int numberOfVertices, 
 
 Vertex *Primitive::getVertices() { return this->vertices.data(); }
 unsigned int *Primitive::getIndices() { return this->indices.data(); }
-const unsigned int Primitive::getNumberOfVertices() const { return this->vertices.size(); }
-const unsigned int Primitive::getNumberOfIndices() const { return this->indices.size(); }
+unsigned int Primitive::getNumberOfVertices() const { return this->vertices.size(); }
+unsigned int Primitive::getNumberOfIndices() const { return this->indices.size(); }

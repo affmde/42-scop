@@ -13,10 +13,10 @@ Mesh::Mesh(Vertex *vertexArray,
 	this->numberOfVertices = numberOfVertices;
 	this->numberOfIndices = numberOfIndices;
 	this->vertexArray = new Vertex[this->numberOfVertices];
-	for(int i = 0; i < this->numberOfVertices; i++)
+	for(unsigned int i = 0; i < this->numberOfVertices; i++)
 		this->vertexArray[i] = vertexArray[i];
 	this->indexArray = new unsigned int[this->numberOfIndices];
-	for(int i = 0; i < this->numberOfIndices; i++)
+	for(unsigned int i = 0; i < this->numberOfIndices; i++)
 		this->indexArray[i] = indexArray[i];
 	this->scale = Vector3f(1.f);
 	this->initVAO();
@@ -29,10 +29,10 @@ Mesh::Mesh(Primitive *primitive, Vector3f origin) : modelMatrix(1.f)
 	this->numberOfVertices = primitive->getNumberOfVertices();
 	this->numberOfIndices = primitive->getNumberOfIndices();
 	this->vertexArray = new Vertex[this->numberOfVertices];
-	for(int i = 0; i < this->numberOfVertices; i++)
+	for(unsigned int i = 0; i < this->numberOfVertices; i++)
 		this->vertexArray[i] = primitive->getVertices()[i];
 	this->indexArray = new unsigned int[this->numberOfIndices];
-	for(int i = 0; i < this->numberOfIndices; i++)
+	for(unsigned int i = 0; i < this->numberOfIndices; i++)
 		this->indexArray[i] = primitive->getIndices()[i];
 
 	this->scale = Vector3f(1.f);
@@ -57,10 +57,10 @@ Mesh::Mesh(const Mesh &other) : modelMatrix(1.f)
 	this->numberOfVertices = other.numberOfVertices;
 	this->numberOfIndices = other.numberOfIndices;
 	this->vertexArray = new Vertex[this->numberOfVertices];
-	for(int i = 0; i < this->numberOfVertices; i++)
+	for(unsigned int i = 0; i < this->numberOfVertices; i++)
 		this->vertexArray[i] = other.vertexArray[i];
 	this->indexArray = new unsigned int[this->numberOfIndices];
-	for(int i = 0; i < this->numberOfIndices; i++)
+	for(unsigned int i = 0; i < this->numberOfIndices; i++)
 		this->indexArray[i] = other.indexArray[i];
 	this->scale = Vector3f(1.f);
 	this->initVAO();
@@ -73,7 +73,6 @@ void Mesh::initVAO()
 	glGenVertexArrays(1, &this->VAO);
 	glBindVertexArray(this->VAO);
 	//VBO -> Vertex Buffer Object
-	GLuint VBO;
 	glGenBuffers(1, &this->VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
 	glBufferData(GL_ARRAY_BUFFER, this->numberOfVertices * sizeof(Vertex), this->vertexArray, GL_STATIC_DRAW);

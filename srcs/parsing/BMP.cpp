@@ -20,14 +20,6 @@ BMP::BMP(std::string fileName)
 	this->info.compression = 0;
 	this->info.imageSize = 0;
 
-
-	this->colorHeader.redMask = 0x00FF0000;
-	this->colorHeader.greenMask = 0x0000FF00;
-	this->colorHeader.blueMask = 0x000000FF;
-	this->colorHeader.alphaMask = 0xFF000000;
-	this->colorHeader.colorSpaceType = 0x73524742;
-	bzero(this->colorHeader.unused, sizeof(this->colorHeader.unused));
-
 	this->readFile();
 }
 BMP::~BMP()
@@ -91,7 +83,7 @@ void BMP::readFile()
 	this->img.rgb = new t_color*[this->info.height];
 	for (int i = this->img.height - 1; i >= 0; i--)
 	{
-		this->img.rgb[i] = new t_color[this->info.width];
+		this->img.rgb[i] = new t_color[nbrOfRGB];
 		fread(this->img.rgb[i], 1, bytesToread, file);
 	}
 	fclose(file);
@@ -117,7 +109,7 @@ void BMP::convertImageToGrayScale()
 	}
 }
 
-int BMP::createBlackAndWhiteImage(t_BMPHeader header, t_BMPinfo info, t_BMPColorHeader colorHeader)
+int BMP::createBlackAndWhiteImage(t_BMPHeader header, t_BMPinfo info)
 {
 	FILE *file = fopen((this->filePath + "bw.bmp").c_str(), "wb");
 	if (!file)

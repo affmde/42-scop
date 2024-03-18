@@ -10,7 +10,7 @@
 Scene::Scene(int width, int height, std::string title, std::string filePath) : 
 	viewMatrix(1.f),
 	projectionMatrix(1.f),
-	camera(Vector3f(0, 0, 3.f), Vector3f(0.f, 0.f, 1.f), Vector3f(0.f, 1.f, 0.f))
+	camera(Vector3f(0, 0, 3.f), Vector3f(0.f, 1.f, 0.f))
 {
 	this->filePath = filePath;
 	this->drawMode = DrawMode::LINES;
@@ -94,8 +94,8 @@ void Scene::openGLSettings()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	GLFWwindow *window = this->window.getWindow();
-	//TODO: REMEMBER TO UNCOMMENT THE NEXT LINE IN MAC!!!!!!!!!!
+	//TODO: REMEMBER TO UNCOMMENT THE NEXT LINES IN MAC!!!!!!!!!!
+	// GLFWwindow *window = this->window.getWindow();
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
@@ -237,7 +237,7 @@ void Scene::handleInput()
 	
 	this->handleKeyboardInputs();
 	this->handleMouseInputs();
-	this->camera.handleInput(this->dt, -1, this->mouseOffsetX, this->mouseOffsetY);
+	this->camera.handleInput(this->dt, this->mouseOffsetX, this->mouseOffsetY);
 }
 
 void Scene::handleKeyboardInputs()

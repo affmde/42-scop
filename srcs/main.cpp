@@ -1,15 +1,7 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <GL/gl.h>
 #include <iostream>
 
 #include "Scene.hpp"
 #include "Checker.hpp"
-
-#define STB_IMAGE_IMPLEMENTATION
- #include "stb_images/stb_image.h"
- #define STB_IMAGE_WRITE_IMPLEMENTATION
- #include "stb_images/stb_image_write.h"
 
 int main(int argc, char **argv)
 {
