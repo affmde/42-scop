@@ -35,13 +35,13 @@ private:
 	Vector3f front;
 	Vector3f up;
 	Vector3f right;
-	
+
 	float pitch;
 	float yaw;
 	float roll;
 
 	const float movementSpeed = 5.f;
-	const float mouseSensitivity = 0.3f;
+	const float mouseSensitivity = 1.f;
 
 	void updateVectors();
 	void handleMouseInput(const float &dt, const double &mouseOffsetX, const double &mouseOffsetY);

@@ -72,9 +72,9 @@ private:
 	bool firstMouse;
 
 	float fadeFactor;
-	bool isFading = false;
-	bool isFadeIn = true;
-	bool isFadeOut = false;
+	bool isFading;
+	bool isFadeIn;
+	bool isFadeOut;
 	void fade();
 	void fadeIn();
 	void fadeOut();

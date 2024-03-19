@@ -30,7 +30,7 @@ BMP::~BMP()
 	delete[] this->imgData;
 }
 
-void BMP::convertData() 
+void BMP::convertData()
 {
 	this->imgData = new unsigned char[this->img.width * this->img.height * 3]; // 3 components (R, G, B)
 
@@ -53,7 +53,7 @@ void BMP::readFile()
 	if (!file)
 		throw std::runtime_error("Failed to open the file " + this->filePath);
 	fread(this->header.name, sizeof(char) * 2, 1, file);
-	
+
 	if (this->header.name[0] != 'B' || this->header.name[1] != 'M')
 	{
 		fclose(file);
@@ -79,7 +79,7 @@ void BMP::readFile()
 	this->img.width = this->info.width;
 	int bytesToread = ((24 * this->info.width + 31) / 32) * 4;
 	int nbrOfRGB = bytesToread / sizeof(t_color) + 1;
-	
+
 	this->img.rgb = new t_color*[this->info.height];
 	for (int i = this->img.height - 1; i >= 0; i--)
 	{
@@ -114,7 +114,7 @@ int BMP::createBlackAndWhiteImage(t_BMPHeader header, t_BMPinfo info)
 	FILE *file = fopen((this->filePath + "bw.bmp").c_str(), "wb");
 	if (!file)
 		throw std::runtime_error("Failed to create the file blackAndWhite.bmp");
-	
+
 	fwrite(header.name, sizeof(char) * 2, 1, file);
 	fwrite(&header.fileSize, 3 * sizeof(int), 1, file);
 

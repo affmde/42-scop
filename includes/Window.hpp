@@ -11,7 +11,7 @@ class Window
 public:
 	Window();
 	~Window();
-	
+
 	GLFWwindow *getWindow();
 	int &getWidthBuffer();
 	int &getHeigthBuffer();
@@ -23,8 +23,6 @@ public:
 
 private:
 	GLFWwindow *window;
-	int width;
-	int heigth;
 	int widthBuffer;
 	int heigthBuffer;
 	std::string title;

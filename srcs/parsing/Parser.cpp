@@ -7,7 +7,7 @@
 #include "Utils.hpp"
 #include "Vertex.hpp"
 
-Parser::Parser() 
+Parser::Parser()
 {
 	std::srand(time(NULL));
 }
@@ -52,7 +52,7 @@ std::vector<Vertex> Parser::loadObj(std::string pathFile)
 				parseFaceLine(ss);
 			else {}
 		}
-		
+
 		file.close();
 		this->populateVertex();
 	}

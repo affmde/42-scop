@@ -13,7 +13,7 @@ Camera::Camera(Vector3f cameraPosition, Vector3f worldUp) : viewMatrix(1.f)
 	this->pitch = 0.f;
 	this->yaw = -90.f;
 	this->roll = 0.f;
-	
+
 	this->updateVectors();
 }
 

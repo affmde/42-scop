@@ -21,7 +21,7 @@ GLFWwindow *Window::createWindow(const int width, const int heigth, std::string 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-	// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);   FOR MACOS
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);   //FOR MACOS
 	this->window = glfwCreateWindow(width, heigth, title.c_str(), NULL, NULL);
 	if (!this->window)
 	{
