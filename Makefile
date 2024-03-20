@@ -93,7 +93,7 @@ downloadGLFW:
 	fi
 
 $(NAME): $(OBJS_DIR) $(OBJS)
-	g++ $(CFLAGS) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME)
+	@g++ $(CFLAGS) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME)
 	@echo "$(COLOUR_GREEN)Completed$(COLOUR_END)"
 
 clean:
