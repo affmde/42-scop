@@ -20,27 +20,6 @@ Model::Model(Vector3f position, Material *material, Texture *texDif, Texture *te
 	}
 }
 
-Model::Model(Vector3f position, Material *material, Texture *texDif, Texture *texSpe, std::string filePath)
-{
-	this->position = position;
-	this->material = material;
-	this->overrideTexutureDiffuse = texDif;
-	this->overrideTextureSpecular = texSpe;
-	this->selfRotate = false;
-
-	Parser parser;
-	std::vector<Vertex> mesh = parser.loadObj(filePath);
-	Mesh *m = new Mesh(
-		mesh.data(),
-		mesh.size(),
-		NULL,
-		0,
-		Vector3f(0, 0.5f, 0)
-	);
-	this->meshes.insert(std::make_pair(filePath, m));
-	for(auto &i : this->meshes)
-		i.second->move(this->position);
-}
 
 Model::~Model()
 {
@@ -51,7 +30,7 @@ Model::~Model()
 void Model::update()
 {
 }
-
+#include <iostream>
 void Model::render(ShaderLoader *shader)
 {
 	if (this->selfRotate)

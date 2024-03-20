@@ -42,6 +42,9 @@ Scene::Scene(int width, int height, std::string title, std::string filePath) :
 
 	try {
 		this->parsedObj = parser.loadObj(this->filePath);
+		const std::vector<std::string> &mtlLibs = parser.getMtlLibs();
+		for(auto &lib : mtlLibs)
+			this->mtlData = mtlParser.parseMtlFile("Models/" + lib);
 		this->initGLFW();
 		this->window.createWindow(width, height, title);
 		this->initGlad();
@@ -65,11 +68,13 @@ Scene::~Scene()
 	for(auto &texture : this->textures)
 		delete texture.second;
 	for(auto &material : this->materials)
-		delete material;
+		delete material.second;
 	for(auto &light : this->lights)
 		delete light;
 	for(auto &model : this->models)
 		delete model;
+	for(auto &mtl : this->mtlData)
+		delete mtl.second;
 	glfwTerminate();
 }
 
@@ -126,17 +131,54 @@ void Scene::initTextures()
 	Texture *texture2 = new Texture();
 	texture2->loadTexture("Textures/woodBoxSpecular.bmp", GL_TEXTURE_2D, 1);
 	this->textures.insert(std::make_pair("woodBoxSpecular", texture2));
+	
+	int i = this->textures.size();
+	for(auto &mtl : this->mtlData)
+	{
+		if (!mtl.second->getDiffuseTex().empty())
+		{
+			Texture *texture = new Texture();
+			texture->loadTexture(mtl.second->getDiffuseTex(), GL_TEXTURE_2D, i);
+			this->textures.insert(std::make_pair(mtl.second->getDiffuseTex(), texture));
+			i++;
+		}
+		if (!mtl.second->getSpecularTex().empty())
+		{
+			Texture *texture = new Texture();
+			texture->loadTexture(mtl.second->getSpecularTex(), GL_TEXTURE_2D, i);
+			this->textures.insert(std::make_pair(mtl.second->getSpecularTex(), texture));
+			i++;
+		}
+	}
 }
 
 void Scene::initMaterials()
 {
-	  this->materials.push_back(
-		new Material(
-			Vector3f(0.1f),
-			Vector3f(1.0f),
-			Vector3f(2.f),
-			this->textures.at("woodBox")->getTextureUnit(),
-			this->textures.at("woodBoxSpecular")->getTextureUnit()));
+	this->materials.insert(std::make_pair(
+	"woodBox",
+	new Material(
+		Vector3f(0.1f),
+		Vector3f(1.0f),
+		Vector3f(2.f),
+		this->textures.at("woodBox")->getTextureUnit(),
+		this->textures.at("woodBoxSpecular")->getTextureUnit())));
+
+	for(auto &mtl : this->mtlData)
+	{
+		int diffuseUnit = mtl.second->getDiffuseTex().empty() ? 0 : this->textures.at(mtl.second->getDiffuseTex())->getTextureUnit();
+		int specularUnit = mtl.second->getSpecularTex().empty() ? 0 : this->textures.at(mtl.second->getSpecularTex())->getTextureUnit();
+		
+		this->materials.insert(std::make_pair(
+			mtl.first,
+			new Material(
+				mtl.second->getAmbient(),
+				mtl.second->getDiffuse(),
+				mtl.second->getSpecular(),
+				diffuseUnit,
+				specularUnit
+			)
+		));
+	}
 }
 
 void Scene::initLights()
@@ -154,23 +196,51 @@ void Scene::initUniforms()
 
 void Scene::initModels()
 {
-	Mesh *mesh = new Mesh(
-		this->parsedObj.data(),
-		this->parsedObj.size(),
-		NULL,
-		0,
-		Vector3f(0, 0.5f, 0)
-	);
-	this->models.push_back(new Model(
-		Vector3f(0.0f, 0.f, -1.f),
-		this->materials[MATERIAL_ENUM],
-		this->textures.at("woodBox"),
-		this->textures.at("woodBoxSpecular"),
-		std::unordered_map<std::string, Mesh*>{
-			{"parsedObj", mesh}
-		}
-	));
-	delete mesh;
+	// Quad *quad = new Quad();
+	// Mesh *mesh = new Mesh(
+	// 	quad,
+	// 	Vector3f(0, 0.5f, 0)
+	// );
+	// this->models.push_back(new Model(
+	// 	Vector3f(0.0f, 0.f, -1.f),
+	// 	this->materials.at("woodBox"),
+	// 	this->textures.at("woodBox"),
+	// 	this->textures.at("woodBoxSpecular"),
+	// 	std::unordered_map<std::string, Mesh*>{
+	// 		{"parsedObj", mesh}
+	// 	}
+	// ));
+	// delete mesh;
+
+	for(auto &obj : this->parsedObj)
+	{
+		Mesh *mesh = new Mesh(
+			obj.second->getVertices().data(),
+			obj.second->getVertices().size(),
+			NULL,
+			0,
+			Vector3f(0, 0.5f, 0)
+		);
+		
+		std::string materialName = obj.second->getMaterialName();
+		if (materialName.empty())
+			materialName = "woodBox";
+		Material &material = *this->materials.at(materialName);
+		
+		Texture &diff = this->findTextureByUnit(material.getDiffuseTex());
+		Texture &spec = this->findTextureByUnit(material.getSpecularTex());
+		Model *newModel = new Model(
+			Vector3f(0.0f, -0.5f, -1.f),
+			this->materials.at(materialName),
+			&diff,
+			&spec,
+			std::unordered_map<std::string, Mesh*>{
+				{obj.first, mesh}
+			}
+		);
+		this->models.push_back(newModel);
+		delete mesh;
+	}
 }
 
 void Scene::closeWindow() { this->window.closeWindow(); }
@@ -199,8 +269,8 @@ void Scene::render()
 
 	glBindVertexArray(0);
 	glUseProgram(0);
-	this->textures.at("woodBox")->unbind();
-	this->textures.at("woodBoxSpecular")->unbind();
+	for(auto &t : this->textures)
+		t.second->unbind();
 }
 
 void Scene::updateUniforms()
@@ -351,4 +421,14 @@ void Scene::fadeOut()
 		this->isFadeOut = true;
 		this->isFadeIn = false;
 	}
+}
+
+Texture &Scene::findTextureByUnit(int unit)
+{
+	for(auto &texture : this->textures)
+	{
+		if (texture.second->getTextureUnit() == unit)
+			return *texture.second;
+	}
+	throw std::runtime_error("Error: Texture not found");
 }

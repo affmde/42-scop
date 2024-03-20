@@ -12,7 +12,6 @@ class Model
 {
 public:
 	Model(Vector3f position, Material *material, Texture *texDif, Texture *texSpe, std::unordered_map<std::string, Mesh*> meshes);
-	Model(Vector3f position, Material *material, Texture *textDif, Texture *texSpe, std::string fileName);
 	~Model();
 
 	void update();

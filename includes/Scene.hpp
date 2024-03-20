@@ -10,6 +10,7 @@
 #include "Camera.hpp"
 #include "Model.hpp"
 #include "Parser.hpp"
+#include "MtlParser.hpp"
 
 enum shader_enum { CORE_PROGRAM = 0 };
 enum texture_enum { TEXTURE_ENUM = 0 };
@@ -33,12 +34,15 @@ private:
 	Window window;
 
 	Parser parser;
-	std::vector<Vertex> parsedObj;
+	std::unordered_map<std::string, Object*> parsedObj;
 	DrawMode drawMode;
+
+	MtlParser mtlParser;
+	std::unordered_map<std::string, mtl_Material*> mtlData;
 
 	std::vector<ShaderLoader*> shaders;
 	std::unordered_map<std::string, Texture*> textures;
-	std::vector<Material*> materials;
+	std::unordered_map<std::string, Material*> materials;
 	std::vector<Vector3f*> lights;
 	std::vector<Model*> models;
 	std::string filePath;
@@ -97,6 +101,8 @@ private:
 	void handleKeyboardInputs();
 	void handleMouseInputs();
 	void zoom(float value);
+
+	Texture &findTextureByUnit(const int unit);
 };
 
 #endif

@@ -6,6 +6,7 @@
 #include "Parser.hpp"
 #include "Utils.hpp"
 #include "Vertex.hpp"
+#include "Object.hpp"
 
 Parser::Parser()
 {
@@ -13,7 +14,7 @@ Parser::Parser()
 }
 Parser::~Parser() {}
 
-std::vector<Vertex> Parser::loadObj(std::string pathFile)
+std::unordered_map<std::string, Object*> Parser::loadObj(std::string pathFile)
 {
 	std::ifstream file(pathFile);
 	std::string line;
@@ -21,6 +22,7 @@ std::vector<Vertex> Parser::loadObj(std::string pathFile)
 	Vector3f tempVec3;
 	Vector2f tempVec2;
 
+	std::string currentName = "";
 	if(file.is_open())
 	{
 		while(std::getline(file, line))
@@ -28,11 +30,28 @@ std::vector<Vertex> Parser::loadObj(std::string pathFile)
 			ss.clear();
 			ss.str(line);
 			ss >> prefix;
-
 			if (prefix == "#") {}
-			else if (prefix == "o") {}
+			else if(prefix == "mtllib")
+			{
+				std::string mtlPath;
+				ss >> mtlPath;
+				this->mtlLibs.push_back(mtlPath);
+			}
+			else if (prefix == "o")
+			{
+				std::string name;
+				ss >> name;
+				currentName = name;
+				this->objects[currentName] = new Object();
+				this->objects[currentName]->setName(name);
+			}
 			else if (prefix == "s") {}
-			else if (prefix == "use_mtl") {}
+			else if (prefix == "use_mtl" || prefix == "usemtl")
+			{
+				std::string materialName;
+				ss >> materialName;
+				objects[currentName]->setMaterialName(materialName);
+			}
 			else if (prefix == "v")
 			{
 				Vector3f vector = this->parseV_VN(ss);
@@ -49,30 +68,37 @@ std::vector<Vertex> Parser::loadObj(std::string pathFile)
 				verticesNormal.push_back(vector);
 			}
 			else if (prefix == "f")
-				parseFaceLine(ss);
+			{
+				objects[currentName]->increaseTotalFaces();
+				parseFaceLine(ss, *this->objects[currentName]);
+			}
 			else {}
 		}
-
 		file.close();
 		this->populateVertex();
 	}
 	else
 		throw std::runtime_error("Error: Could not open file " + pathFile);
-	return vertices;
+	return this->objects;
 }
 
 void Parser::populateVertex()
 {
-	vertices.resize(verticesPositionIndices.size(), Vertex());
-	for(unsigned int i = 0; i < vertices.size(); i++)
+	for(auto &obj : this->objects)
 	{
-		if (!verticesPosition.empty() && verticesPositionIndices[i] != -1)
-			vertices[i].position = verticesPosition[verticesPositionIndices[i] - 1];
-		if (!verticesTextureCoord.empty() && verticesTexCoordIndices[i] != -1)
-			vertices[i].texcoord = verticesTextureCoord[verticesTexCoordIndices[i] - 1];
-		if (!verticesNormal.empty() && verticesNormalIndices[i] != -1)
-			vertices[i].normal = verticesNormal[verticesNormalIndices[i] - 1];
-		vertices[i].color = getRandomColor();
+		obj.second->getVertices().resize(obj.second->getPositionIndices().size());
+		for(unsigned int i = 0; i < obj.second->getPositionIndices().size(); i++)
+		{
+			Vertex vertex;
+			if (!verticesPosition.empty() && obj.second->getPositionIndices()[i] != -1)
+				vertex.position = verticesPosition[obj.second->getPositionIndices()[i] - 1];
+			if (!verticesTextureCoord.empty() && obj.second->getTextureCoordIndices()[i] != -1)
+				vertex.texcoord = verticesTextureCoord[obj.second->getTextureCoordIndices()[i] - 1];
+			if (!verticesNormal.empty() && obj.second->getNormalIndices()[i] != -1)
+				vertex.normal = verticesNormal[obj.second->getNormalIndices()[i] - 1];
+			vertex.color = getRandomColor();
+			obj.second->addVertex(vertex);
+		}
 	}
 }
 
@@ -125,7 +151,7 @@ void Parser::invalidVecValue(std::string &val)
 	}
 }
 
-void Parser::parseFaceLine(std::stringstream &ss)
+void Parser::parseFaceLine(std::stringstream &ss, Object &currentOject)
 {
 	std::string str(ss.str());
 	std::vector<std::string> tempVertex = str_split(str, " ");
@@ -141,34 +167,34 @@ void Parser::parseFaceLine(std::stringstream &ss)
 		std::vector<std::string> indicesVec2 = str_split(tempVertex[vert2], "/");
 		std::vector<std::string> indicesVec3 = str_split(tempVertex[vert3], "/");
 		validateFace(indicesVec1, indicesVec2, indicesVec3);
-		populateIndices(indicesVec1);
-		populateIndices(indicesVec2);
-		populateIndices(indicesVec3);
+		populateIndices(indicesVec1, currentOject);
+		populateIndices(indicesVec2, currentOject);
+		populateIndices(indicesVec3, currentOject);
 		vert2++;
 		vert3++;
 	}
 }
 
-void Parser::populateIndices(const std::vector<std::string> &vec)
+void Parser::populateIndices(const std::vector<std::string> &vec, Object &currentObject)
 {
 	int counter = 0;
 	for(auto &v : vec)
 		{
 			if (counter == 0)
-				verticesPositionIndices.push_back(std::stof(v));
+				currentObject.addPositionIndex(std::stoi(v));
 			else if (counter == 1)
 			{
 				if (!v.compare(""))
-					verticesTexCoordIndices.push_back(-1);
+					currentObject.addTextureCoordIndex(-1);
 				else
-					verticesTexCoordIndices.push_back(std::stof(v));
+					currentObject.addTextureCoordIndex(std::stof(v));
 			}
 			else if (counter == 2)
 			{
 				if (!v.compare(""))
-					verticesNormalIndices.push_back(-1);
+					currentObject.addNormalIndex(-1);
 				else
-					verticesNormalIndices.push_back(std::stof(v));
+					currentObject.addNormalIndex(std::stof(v));
 			}
 			++counter;
 		}
@@ -177,15 +203,7 @@ void Parser::populateIndices(const std::vector<std::string> &vec)
 void Parser::validateFace(std::vector<std::string> &v1, std::vector<std::string> &v2, std::vector<std::string> &v3)
 {
 	if (v1.size() > 3 || v2.size() > 3 || v3.size() > 3)
-	{
-		for(auto &v : v1)
-			std::cout << v << std::endl;
-		for(auto &v : v2)
-			std::cout << v << std::endl;
-		for(auto &v : v3)
-			std::cout << v << std::endl;
 		throw std::runtime_error("Error: Invalid face");
-	}
 	validateVertice(v1);
 	validateVertice(v2);
 	validateVertice(v3);
@@ -234,3 +252,18 @@ void Parser::checkInvalidIndex(std::string &line, int size)
 		throw std::runtime_error(e.what());
 	}
 }
+
+Object &Parser::getObjectByVertexId(int id)
+{
+	int commulativeFaces = 0;
+	for(auto &obj : this->objects)
+	{
+		commulativeFaces += obj.second->getTotalFaces();
+		if (id <= commulativeFaces)
+			return *obj.second;
+	}
+	throw std::runtime_error("Error: Could not find object with id: " + std::to_string(id)
+	+ " Comulative: " + std::to_string(commulativeFaces));
+}
+
+const std::vector<std::string> &Parser::getMtlLibs() const { return this->mtlLibs; }

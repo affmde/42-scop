@@ -1,7 +1,8 @@
 #include "Texture.hpp"
+#include "BMP.hpp"
 
 #include <iostream>
-#include "BMP.hpp"
+#include <stb_images/stb_image.h>
 
 Texture::Texture()
 {
@@ -24,10 +25,11 @@ bool Texture::loadTexture(std::string texturePath, GLenum type, unsigned int tex
 	glGenTextures(1, &this->texture);
 	glBindTexture(type, this->texture);
 
-	BMP bmp(texturePath);
-	this->image = bmp.getData();
-	this->width = bmp.getWidth();
-	this->heigth = bmp.getHeight();
+	//BMP bmp(texturePath);
+	// this->image = bmp.getData();
+	// this->width = bmp.getWidth();
+	// this->heigth = bmp.getHeight();
+	this->image = stbi_load(texturePath.c_str(), &this->width, &this->heigth, 0, STBI_rgb_alpha);
 
 	glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -35,16 +37,14 @@ bool Texture::loadTexture(std::string texturePath, GLenum type, unsigned int tex
 	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	if (!this->image)
-	{
-		std::cout << "Failed to load the image" << std::endl;
-		return false;
-	}
+		throw std::runtime_error("Failed to load the image: " + texturePath);
 	else
 	{
-		glTexImage2D(type, 0, GL_RGB, this->width, this->heigth, 0, GL_RGB, GL_UNSIGNED_BYTE, this->image);
+		glTexImage2D(type, 0, GL_RGBA, this->width, this->heigth, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->image);
 		glGenerateMipmap(type);
 	}
 	this->bind();
+	stbi_image_free(this->image);
 	return true;
 }
 

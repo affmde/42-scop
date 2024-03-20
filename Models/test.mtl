@@ -1,0 +1,127 @@
+# Blender 3.4.1 MTL File: 'test.blend'
+# www.blender.org
+
+newmtl Wolf3D_Body.004
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+Pr 0.698241
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd Textures/andre/baseColor.011.jpg
+map_Bump -bm 1.000000 Textures/andre/Image_0.002.jpg
+
+newmtl Wolf3D_Eye.004
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+Pr 1.000000
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd Textures/andre/baseColor.008.jpg
+
+newmtl Wolf3D_Hair.004
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+Pr 0.727273
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd Textures/andre/baseColor.010.jpg
+map_Bump -bm 1.000000 Textures/andre/hair-18-N.002.jpg
+
+newmtl Wolf3D_Outfit_Bottom.004
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+Pr 0.500000
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd Textures/andre/Image_2.002.jpg
+map_Bump -bm 1.000000 Textures/andre/Image_1.002.jpg
+
+newmtl Wolf3D_Outfit_Footwear.004
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+Pr 0.500000
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd Textures/andre/Image_5.002.jpg
+map_Bump -bm 1.000000 Textures/andre/Image_4.002.jpg
+
+newmtl Wolf3D_Outfit_Top.004
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+Pr 0.500000
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd Textures/andre/Image_8.002.jpg
+map_Bump -bm 1.000000 Textures/andre/Image_7.002.jpg
+
+newmtl Wolf3D_Skin.004
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+Pr 0.700000
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd Textures/andre/baseColor.009.jpg
+
+newmtl Wolf3D_Teeth.004
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+Pr 1.000000
+Pm 0.000000
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd Textures/andre/Wolf3D_Teeth.002.jpg

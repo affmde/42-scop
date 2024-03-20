@@ -25,7 +25,8 @@ COLOUR_BLUE=\033[0;34m
 COLOUR_END=\033[0m
 
 NAME	:= scope
-CFLAGS	:= -Wextra -Wall -Werror
+CFLAGS	:=
+#CFLAGS	:= -Wextra -Wall -Werror
 GLFW	:= libraries/glfw
 GLAD	:= libraries/glad
 
@@ -54,11 +55,12 @@ DISPLAY_DIR = srcs/display/
 GLAD_DIR = libraries/glad/src/
 PARSING_DIR = srcs/parsing/
 
-CORE = main.cpp Checker.cpp Utils.cpp ShaderLoader.cpp Texture.cpp Material.cpp Mesh.cpp Scene.cpp Model.cpp
+CORE = main.cpp Checker.cpp Utils.cpp ShaderLoader.cpp Texture.cpp Material.cpp Mesh.cpp Scene.cpp \
+	Model.cpp mtl_Material.cpp Object.cpp
 GEOMETRY = Vector3f.cpp Vector2f.cpp Vertex.cpp Mat4.cpp Primitives.cpp Quad.cpp Triangle.cpp Pyramid.cpp
 DISPLAY = Camera.cpp Window.cpp
 GLAD_SRC = glad.c
-PARSING = BMP.cpp Parser.cpp
+PARSING = BMP.cpp Parser.cpp MtlParser.cpp
 
 ALL_SOURCES = $(CORE) $(GEOMETRY) $(DISPLAY) $(PARSING)
 ALL_OBJS = $(ALL_SOURCES:.cpp=.o) $(GLAD_SRC:.c=.o)
@@ -93,7 +95,7 @@ downloadGLFW:
 	fi
 
 $(NAME): $(OBJS_DIR) $(OBJS)
-	g++ $(CFLAGS) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME)
+	@g++ $(CFLAGS) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME)
 	@echo "$(COLOUR_GREEN)Completed$(COLOUR_END)"
 
 clean:
