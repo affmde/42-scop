@@ -14,7 +14,6 @@ public:
 	ShaderLoader(std::string vertexPath, std::string fragmentPath, std::string geometryPath = "");
 	~ShaderLoader();
 
-	// bool loadShaders(GLuint &program);
 	void use();
 	void unuse();
 	void set1i(int value, const char *name);
@@ -36,10 +35,6 @@ private:
 	std::string loadShaderSource(std::string filePath);
 	GLuint loadShader(GLenum type, std::string source);
 	void linkProgram(GLuint vertexShader, GLuint geometryShader, GLuint fragmentShader);
-
-	// bool loadVertex();
-	// bool loadFragment();
-	// bool loadProgram(GLuint &program);
 
 };
 

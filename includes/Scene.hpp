@@ -61,7 +61,6 @@ private:
 	float nearPlane;
 	float farPlane;
 
-	//FOR CAMERA
 	Camera camera;
 	float dt;
 	float currentTime;

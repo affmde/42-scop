@@ -196,22 +196,6 @@ void Scene::initUniforms()
 
 void Scene::initModels()
 {
-	// Quad *quad = new Quad();
-	// Mesh *mesh = new Mesh(
-	// 	quad,
-	// 	Vector3f(0, 0.5f, 0)
-	// );
-	// this->models.push_back(new Model(
-	// 	Vector3f(0.0f, 0.f, -1.f),
-	// 	this->materials.at("woodBox"),
-	// 	this->textures.at("woodBox"),
-	// 	this->textures.at("woodBoxSpecular"),
-	// 	std::unordered_map<std::string, Mesh*>{
-	// 		{"parsedObj", mesh}
-	// 	}
-	// ));
-	// delete mesh;
-
 	for(auto &obj : this->parsedObj)
 	{
 		Mesh *mesh = new Mesh(
