@@ -161,7 +161,9 @@ void Scene::initMaterials()
 		Vector3f(1.0f),
 		Vector3f(2.f),
 		this->textures.at("woodBox")->getTextureUnit(),
-		this->textures.at("woodBoxSpecular")->getTextureUnit())));
+		this->textures.at("woodBoxSpecular")->getTextureUnit(),
+		1.f,
+		1.f)));
 
 	for(auto &mtl : this->mtlData)
 	{
@@ -171,9 +173,7 @@ void Scene::initMaterials()
 		this->materials.insert(std::make_pair(
 			mtl.first,
 			new Material(
-				mtl.second->getAmbient(),
-				mtl.second->getDiffuse(),
-				mtl.second->getSpecular(),
+				*(mtl.second),
 				diffuseUnit,
 				specularUnit
 			)

@@ -5,6 +5,7 @@ mtl_Material::mtl_Material()
 	this->ambient = Vector3f(1.f);
 	this->diffuse = Vector3f(1.f);
 	this->specular = Vector3f(1.f);
+	this->dissolve = 1.f;
 }
 mtl_Material::~mtl_Material(){}
 

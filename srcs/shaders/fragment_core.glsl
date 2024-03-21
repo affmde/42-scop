@@ -7,6 +7,8 @@ struct Material
 	vec3 specular;
 	sampler2D diffuseTex;
 	sampler2D specularTex;
+	float Ns;
+	float dissolve;
 };
 
 in vec3 vs_position;
@@ -44,7 +46,7 @@ vec3 calculateSpecular(Material material, vec3 vs_position, vec3 lightPosition, 
 	vec3 posToViewDirVec = normalize(cameraPos - vs_position);
 	float specularConst = pow(max(dot(posToViewDirVec, reflectVec), 0), 35);
 	vec3 specularFinal = material.specular * specularConst * texture(material.specularTex, vs_texcoord).rgb;
-	return specularFinal;
+	return specularFinal * material.Ns;
 }
 
 void main()
@@ -60,7 +62,8 @@ void main()
 	//Specular light
 	vec3 specularFinal = calculateSpecular(material, vs_position, lightPosition, vs_normal, cameraPos);
 
-	vec4 calculatedColor = texture(material.diffuseTex, vs_texcoord)
+	vec4 textDissolve = texture(material.diffuseTex, vs_texcoord) * material.dissolve;
+	vec4 calculatedColor = textDissolve
 	* (vec4(ambientFinal, 1.f) + vec4(diffuseFinal, 1.f) + vec4(specularFinal, 1.f));
 
 	vec4 colorsDisplay = vec4(vs_color, 1.f) * fadeFactor * (vec4(ambientFinal, 1.f) + vec4(diffuseFinal, 1.f) + vec4(specularFinal, 1.f));
